@@ -1,0 +1,5 @@
+{
+  "$schema": "./assets.schema.json",
+  "$comment": "Optional high-resolution imagery. Demiurge is complete without any of it; see docs/astronomy.md. Entries are added per body as the renderer learns to use them (phase 4 onward).",
+  "assets": []
+}

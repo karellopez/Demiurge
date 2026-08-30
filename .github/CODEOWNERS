@@ -1,0 +1,11 @@
+# Every change gets a review from the maintainer by default.
+*                       @karellopez
+
+# The load-bearing parts. Changes here alter what "green" means, so they are
+# called out explicitly rather than relying on the catch-all above.
+/.github/               @karellopez
+/scripts/qa/            @karellopez
+/eslint.config.js       @karellopez
+/.dependency-cruiser.cjs @karellopez
+/docs/adr/              @karellopez
+/data/                  @karellopez

@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "WebWorker"],
+    "types": ["vite/client"],
+    "paths": {
+      "@app/*": ["./src/app/*"],
+      "@presentation/*": ["./src/presentation/*"],
+      "@features/*": ["./src/features/*"],
+      "@domain/*": ["./src/domain/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@tests/*": ["./tests/*"]
+    }
+  },
+  "include": ["./src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["./tests/e2e/**/*.ts", "./tests/visual/**/*.ts", "./tests/bench/**/*.ts"]
+}

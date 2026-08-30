@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/karellopez/Demiurge/discussions
+    about: Ask about the simulation, the rendering techniques, or where the project is going.
+  - name: Security vulnerability
+    url: https://github.com/karellopez/Demiurge/security/advisories/new
+    about: Report privately. Please do not open a public issue for a security problem.

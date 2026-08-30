@@ -1,0 +1,43 @@
+{
+  "tier": "medium",
+  "seed": "benchmark",
+  "recordedAt": "2026-08-30T14:36:12.931Z",
+  "phase": 0,
+  "stages": [
+    {
+      "id": "space",
+      "description": "System view, all bodies visible",
+      "status": "pending"
+    },
+    {
+      "id": "orbit",
+      "description": "Low orbit over Mars, clouds and limb",
+      "status": "pending"
+    },
+    {
+      "id": "descent",
+      "description": "Entry through the atmosphere",
+      "status": "pending"
+    },
+    {
+      "id": "landing",
+      "description": "Final approach and touchdown",
+      "status": "pending"
+    },
+    {
+      "id": "walk",
+      "description": "On foot across two biomes",
+      "status": "pending"
+    },
+    {
+      "id": "combat",
+      "description": "Sustained beam fire on a moon",
+      "status": "pending"
+    },
+    {
+      "id": "destruction",
+      "description": "Full destruction sequence",
+      "status": "pending"
+    }
+  ]
+}

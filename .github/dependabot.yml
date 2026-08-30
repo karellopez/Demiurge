@@ -1,0 +1,57 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'chore(deps)'
+      prefix-development: 'chore(deps-dev)'
+    groups:
+      # Grouped so one review covers a whole toolchain bump rather than five
+      # separate red-CI pull requests that only make sense together.
+      eslint:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
+          - '@eslint-community/*'
+          - 'typescript-eslint'
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+      quality-tools:
+        patterns:
+          - 'dependency-cruiser'
+          - 'knip'
+          - 'jscpd'
+          - 'size-limit'
+          - '@size-limit/*'
+          - '@stryker-mutator/*'
+          - 'license-checker-rseidelsohn'
+      build:
+        patterns:
+          - 'vite'
+          - 'typescript'
+          - 'tsx'
+          - 'prettier'
+    ignore:
+      # three.js moves fast and its releases regularly change shader internals
+      # the custom render graph depends on. Bumped deliberately, never
+      # automatically.
+      - dependency-name: three
+        update-types: ['version-update:semver-minor', 'version-update:semver-patch']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: 'chore(ci)'
+    groups:
+      actions:
+        patterns: ['*']

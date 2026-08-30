@@ -1,0 +1,72 @@
+# Paths to labels, for actions/labeler. Keeps the pull request list readable at
+# a glance in a repository where a change can be anything from a shader to a
+# workflow.
+architecture:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.dependency-cruiser.cjs'
+          - 'docs/architecture.md'
+          - 'docs/adr/**'
+
+rendering:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/presentation/render/**'
+          - '**/*.glsl'
+          - 'docs/rendering.md'
+
+simulation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/domain/**'
+          - 'src/shared/**'
+          - 'data/**'
+          - 'docs/astronomy.md'
+
+surface:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/features/surface/**'
+          - 'src/features/exploration/**'
+
+flight:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/features/flight/**'
+          - 'src/features/combat/**'
+
+ui:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/presentation/ui/**'
+          - 'src/app/styles.css'
+
+performance:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'tests/bench/**'
+          - 'scripts/bench-flythrough.ts'
+          - 'docs/performance.md'
+
+quality:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'scripts/qa/**'
+          - 'scripts/qa-report.ts'
+          - 'eslint.config.js'
+          - 'docs/quality.md'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'tests/**'

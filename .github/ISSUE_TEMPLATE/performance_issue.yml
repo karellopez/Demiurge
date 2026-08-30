@@ -1,0 +1,70 @@
+name: Performance issue
+description: Demiurge runs slower than its target for your tier.
+labels: [performance]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Each tier has a published target: Potato 30 fps with no frame over 50 ms,
+        Low 60 fps with p95 under 18 ms, Medium 60 fps under 14 ms, High 60 fps
+        under 12 ms. Please check which tier was detected before filing — it is
+        printed to the console at start-up and shown in settings.
+
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU renderer string
+      description: The `[demiurge]` line printed to the console at start-up.
+      placeholder: 'ANGLE (Intel, Intel(R) UHD Graphics 620 ..., D3D11)'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Detected tier
+      options: [potato, low, medium, high]
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: overridden
+    attributes:
+      label: Tier override
+      options:
+        - label: I left the detected tier alone (rather than raising it in settings).
+
+  - type: input
+    id: resolution
+    attributes:
+      label: Resolution
+      placeholder: 1920x1080
+    validations:
+      required: true
+
+  - type: textarea
+    id: benchmark
+    attributes:
+      label: Benchmark output
+      description: >
+        Run `npm run bench:flythrough` and paste the result, or press F3 in the
+        running simulation and paste the live figures.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: where
+    attributes:
+      label: Where it happens
+      description: >
+        Which scene? Space, orbit, atmospheric entry, on foot, during a
+        destruction sequence? Include the seed and the body.
+    validations:
+      required: true
+
+  - type: input
+    id: memory
+    attributes:
+      label: System memory and CPU
+      placeholder: 8 GB, 4 cores

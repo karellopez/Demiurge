@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "paths": {
+      "@shared/*": ["./src/shared/*"],
+      "@domain/*": ["./src/domain/*"],
+      "@features/*": ["./src/features/*"],
+      "@tests/*": ["./tests/*"]
+    }
+  },
+  "include": [
+    "scripts/**/*.ts",
+    "tests/bench/**/*.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "vitest.mutation.config.ts"
+  ]
+}

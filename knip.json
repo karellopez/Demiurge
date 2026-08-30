@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/app/main.ts",
+    "scripts/*.ts",
+    "tests/**/*.test.ts",
+    "tests/**/*.bench.ts",
+    "tests/e2e/**/*.spec.ts",
+    "tests/visual/**/*.spec.ts"
+  ],
+  "project": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"],
+  "ignoreDependencies": [
+    "@size-limit/file",
+    "@stryker-mutator/vitest-runner",
+    "eslint-import-resolver-typescript"
+  ],
+  "ignoreBinaries": ["depcruise", "stryker"],
+  "vite": { "config": ["vite.config.ts"] },
+  "vitest": { "config": ["vitest.config.ts"] },
+  "playwright": { "config": ["playwright.config.ts"] }
+}

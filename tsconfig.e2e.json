@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // Playwright specs run in Node but carry browser code inside
+    // `page.evaluate`, so they are the one place that legitimately needs both
+    // libraries. Keeping them in their own project stops that leaking into
+    // either the app or the tooling.
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "paths": {
+      "@shared/*": ["./src/shared/*"],
+      "@domain/*": ["./src/domain/*"]
+    }
+  },
+  "include": ["./tests/e2e/**/*.ts", "./tests/visual/**/*.ts", "./playwright.config.ts"]
+}

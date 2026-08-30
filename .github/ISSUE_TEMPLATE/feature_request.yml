@@ -1,0 +1,67 @@
+name: Feature request
+description: Suggest something Demiurge should do.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before writing: three things are graded equally in this project and none
+        may be traded for another — it must be beautiful and correct, it must be
+        a high-quality codebase, and it must be smooth on a 2017 laptop with
+        Intel integrated graphics. A feature that cannot degrade onto that
+        machine does not ship, so it helps to say early how yours would.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is missing
+      description: Describe the gap, not the implementation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: degradation
+    attributes:
+      label: How it would degrade
+      description: >
+        How would this look on the Potato tier (Intel UHD 620, 1366x768, 30 fps
+        locked)? "Turn it off" is a valid answer if the rest still makes sense.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Astronomy and orbital mechanics
+        - Rendering and lighting
+        - Terrain and surface world
+        - Ship, flight, and landing
+        - Weapons and destruction
+        - UI, HUD, and controls
+        - Audio
+        - Accessibility
+        - Performance
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: non-goals
+    attributes:
+      label: Non-goals
+      description: >
+        The project has explicit non-goals — relativistic physics, accurate
+        atmospheric chemistry, simulated ecosystems, monetisation, telemetry,
+        accounts, and multiplayer.
+      options:
+        - label: I have checked this is not one of the project's non-goals.
+          required: true

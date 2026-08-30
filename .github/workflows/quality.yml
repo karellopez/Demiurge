@@ -1,0 +1,68 @@
+name: Quality report
+
+on:
+  pull_request:
+  schedule:
+    # Mutation testing is far too slow for every commit, so it runs nightly and
+    # the QA report picks up whatever it last left behind.
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  NODE_VERSION: '22.23.2'
+
+jobs:
+  report:
+    name: Measure and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Test with coverage
+        run: npm run test:coverage
+
+      - name: Build
+        run: npm run build
+
+      - name: Mutation testing
+        # Nightly only: a full Stryker run costs far more than a PR should wait.
+        if: github.event_name != 'pull_request'
+        run: npm run mutation
+        continue-on-error: true
+
+      - name: Quality gates
+        run: npm run qa
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-report
+          path: |
+            docs/quality/
+            reports/
+          retention-days: 30
+
+      - name: Comment on the pull request
+        if: always() && github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: quality
+          path: docs/quality/report.md

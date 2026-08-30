@@ -1,0 +1,16 @@
+{
+  "$comment": "Quality floors. These only move UP. Lowering any value requires an ADR with an issue link and an expiry date (brief 5.2). `npm run qa -- --ratchet` proposes tightened values when a metric has improved.",
+  "coverageLinesOverall": 80,
+  "coverageBranchesOverall": 75,
+  "coverageLinesCore": 98,
+  "coverageBranchesCore": 98,
+  "mutationScore": 98,
+  "maintainabilityIndexMin": 61,
+  "duplicationPercentMax": 2,
+  "tsdocCoveragePercentMin": 98,
+  "bundleInitialKb": 300,
+  "bundleTotalKb": 1500,
+  "maxFileLines": 400,
+  "maxClassLines": 200,
+  "maxCyclomaticComplexity": 10
+}

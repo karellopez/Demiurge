@@ -1,0 +1,65 @@
+name: Bug report
+description: Something behaves incorrectly.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Demiurge is deterministic: the same seed produces the same universe
+        everywhere. That means most bugs are exactly reproducible if you tell us
+        the seed, so please include it — it is on the title screen and in the URL.
+
+  - type: input
+    id: seed
+    attributes:
+      label: Seed
+      description: From the title screen, or the `#seed=` part of the URL.
+      placeholder: cobalt meridian 417
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Load the seed above
+        2. Select Mars and press L to land
+        3. Walk north-east about 200 m
+        4. The ground disappears
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 141 on Windows 11
+    validations:
+      required: true
+
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU
+      description: >
+        Open the browser console; Demiurge prints the detected tier and the
+        renderer string at start-up. Paste that line.
+      placeholder: '[demiurge] quality tier: low ...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Any errors or warnings. Leave blank if there were none.
+      render: text
