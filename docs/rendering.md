@@ -10,7 +10,7 @@ The bar is a modern space simulator: HDR throughout, a linear workflow, physical
 units. **Every feature here must degrade across all four tiers** — the fallback
 is designed at the same time as the feature, never afterwards.
 
-## Precision — before any rendering (phase 1)
+## Precision — before any rendering (phase 1, **done**)
 
 Neptune sits ~4.5 × 10¹² m out; a surface rock is ~1 m. f32 carries about seven
 digits. Naively, everything jitters and z-fights.
@@ -23,10 +23,13 @@ digits. Naively, everything jitters and z-fights.
 - Terrain patch vertices are generated relative to their own patch origin; the
   patch matrix carries the f64-derived translation. Planet-scale absolute
   coordinates are never baked into a vertex buffer.
-- **Depth**: reversed-Z plus logarithmic depth, or a two-frustum split
-  (0.01 m – 10 km, 10 km – 10¹³ m) with a depth clear between. One is chosen,
-  written up as an ADR, and proved by a test scene holding a 1 m rock and
-  Saturn's rings in one frame with no z-fighting.
+- **Depth**: settled in phase 1 as a **logarithmic depth buffer**, not a
+  two-frustum split. The split keeps early-Z but imposes a permanent ordering
+  constraint on every later system — per-object frustum classification,
+  transparency sorted within a pass and composited between passes, and a
+  post-process graph reconciled across two depth ranges. See
+  `docs/adr/0005-logarithmic-depth-buffer.md`, including the early-Z cost it
+  concedes and the phase-10 revisit.
 - Render scale is decoupled from simulation scale. At true scale a distant planet
   is sub-pixel, and is drawn as a physically motivated additive glare impostor at
   the correct apparent magnitude — which is what the eye actually sees.

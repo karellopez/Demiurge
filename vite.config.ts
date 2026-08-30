@@ -26,6 +26,20 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: true,
+    // The project budgets the payload in *gzipped* kilobytes, which `size-limit`
+    // gates on; Vite's warning counts raw bytes and so fires on a three.js chunk
+    // that is comfortably inside the real budget at 129 kB gzipped.
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        // three.js is by far the heaviest dependency and changes far less often
+        // than our own code, so splitting it out means a redeploy of the
+        // simulation does not invalidate it in everyone's cache.
+        manualChunks(id: string): string | undefined {
+          return id.includes('node_modules/three') ? 'three' : undefined;
+        },
+      },
+    },
   },
   worker: {
     format: 'es',

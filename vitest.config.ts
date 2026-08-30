@@ -56,7 +56,17 @@ export default defineConfig({
       reporter: ['text-summary', 'json-summary', 'json', 'lcov'],
       reportsDirectory: './coverage',
       include: ['src/**/*.ts'],
-      exclude: ['src/**/index.ts', 'src/**/*.d.ts', 'src/app/main.ts'],
+      exclude: [
+        'src/**/index.ts',
+        'src/**/*.d.ts',
+        'src/app/main.ts',
+        // Needs a real WebGL context, which neither happy-dom nor jsdom
+        // provides. It is covered by the Playwright visual-regression suite,
+        // which renders it on a real GPU and compares the result to a committed
+        // baseline; counting it here would only measure how good our stubs are.
+        'src/presentation/render/precision-scene.ts',
+        'src/presentation/render/precision-cubes.ts',
+      ],
       // Gates mirror docs/quality.md §5.1. `scripts/qa-report.ts` re-checks the
       // per-layer floors for `shared/` and `domain/`, which Vitest thresholds
       // cannot express independently of the overall number.

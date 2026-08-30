@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-30T15:08:10.190Z",
+  "generatedAt": "2026-08-30T15:42:05.836Z",
   "gates": [
     {
       "id": "typecheck",
@@ -21,11 +21,11 @@
       "id": "coverage-lines",
       "name": "Coverage - lines, overall",
       "tool": "vitest v8",
-      "value": "100.00%",
+      "value": "98.84%",
       "threshold": ">= 80.00%",
       "status": "pass",
       "numeric": {
-        "measured": 100,
+        "measured": 98.83990719257541,
         "threshold": 80,
         "direction": "min"
       }
@@ -34,11 +34,11 @@
       "id": "coverage-branches",
       "name": "Coverage - branches, overall",
       "tool": "vitest v8",
-      "value": "95.29%",
+      "value": "95.00%",
       "threshold": ">= 75.00%",
       "status": "pass",
       "numeric": {
-        "measured": 95.29411764705881,
+        "measured": 95,
         "threshold": 75,
         "direction": "min"
       }
@@ -73,11 +73,11 @@
       "id": "mutation",
       "name": "Mutation score - shared + domain",
       "tool": "stryker",
-      "value": "100.00%",
+      "value": "98.55%",
       "threshold": ">= 98.00%",
       "status": "pass",
       "numeric": {
-        "measured": 100,
+        "measured": 98.55072463768117,
         "threshold": 98,
         "direction": "min"
       }
@@ -86,13 +86,13 @@
       "id": "maintainability",
       "name": "Maintainability index (worst file)",
       "tool": "scripts/qa (TypeScript AST)",
-      "value": "63.09",
-      "threshold": ">= 61.00",
+      "value": "60.07",
+      "threshold": ">= 60.00",
       "status": "pass",
-      "detail": "worst: src/presentation/ui/boot-screen.ts",
+      "detail": "worst: src/features/engine/engine.ts",
       "numeric": {
-        "measured": 63.08811977888696,
-        "threshold": 61,
+        "measured": 60.071842360661236,
+        "threshold": 60,
         "direction": "min"
       }
     },
@@ -161,7 +161,7 @@
       "value": "clean",
       "threshold": "within .size-limit.json",
       "status": "pass",
-      "detail": "initial JS (entry chunk, gzip): 3.2 kB of 293 kB\ntotal JS (all chunks, gzip, excludes fetched assets): 3.2 kB of 1465 kB"
+      "detail": "initial JS (every chunk needed for the first frame, gzip): 129.7 kB of 293 kB\ntotal payload (JS + CSS, gzip, excludes fetched imagery): 130.6 kB of 1465 kB"
     },
     {
       "id": "vulnerabilities",
@@ -192,7 +192,7 @@
     "coverageLinesCore": 98,
     "coverageBranchesCore": 98,
     "mutationScore": 98,
-    "maintainabilityIndexMin": 61,
+    "maintainabilityIndexMin": 60,
     "duplicationPercentMax": 2,
     "tsdocCoveragePercentMin": 98,
     "bundleInitialKb": 300,
@@ -203,6 +203,39 @@
   },
   "files": [
     {
+      "path": "src/features/engine/engine.ts",
+      "logicalLinesOfCode": 83,
+      "physicalLines": 174,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 1618.130716473471,
+      "maintainabilityIndex": 60.071842360661236,
+      "longestClassLines": 0,
+      "documentableExports": 3,
+      "documentedExports": 3
+    },
+    {
+      "path": "src/presentation/ui/stats-overlay.ts",
+      "logicalLinesOfCode": 77,
+      "physicalLines": 166,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 2092.3832613691548,
+      "maintainabilityIndex": 60.180845304940675,
+      "longestClassLines": 0,
+      "documentableExports": 2,
+      "documentedExports": 2
+    },
+    {
+      "path": "src/shared/math/vec3.ts",
+      "logicalLinesOfCode": 62,
+      "physicalLines": 256,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 2515.2687181189913,
+      "maintainabilityIndex": 62.503721362686335,
+      "longestClassLines": 0,
+      "documentableExports": 17,
+      "documentedExports": 17
+    },
+    {
       "path": "src/presentation/ui/boot-screen.ts",
       "logicalLinesOfCode": 64,
       "physicalLines": 166,
@@ -212,6 +245,28 @@
       "longestClassLines": 0,
       "documentableExports": 3,
       "documentedExports": 3
+    },
+    {
+      "path": "src/app/composition-root.ts",
+      "logicalLinesOfCode": 64,
+      "physicalLines": 163,
+      "cyclomaticComplexity": 8,
+      "halsteadVolume": 1454.5887245497859,
+      "maintainabilityIndex": 63.91720597380622,
+      "longestClassLines": 0,
+      "documentableExports": 6,
+      "documentedExports": 6
+    },
+    {
+      "path": "src/presentation/render/precision-scene.ts",
+      "logicalLinesOfCode": 59,
+      "physicalLines": 162,
+      "cyclomaticComplexity": 6,
+      "halsteadVolume": 1504.4969343077871,
+      "maintainabilityIndex": 65.51958134511881,
+      "longestClassLines": 0,
+      "documentableExports": 1,
+      "documentedExports": 1
     },
     {
       "path": "src/features/diagnostics/detect-quality-tier.ts",
@@ -258,17 +313,6 @@
       "documentedExports": 5
     },
     {
-      "path": "src/app/composition-root.ts",
-      "logicalLinesOfCode": 44,
-      "physicalLines": 116,
-      "cyclomaticComplexity": 7,
-      "halsteadVolume": 870.5071862987985,
-      "maintainabilityIndex": 72.8869326548992,
-      "longestClassLines": 0,
-      "documentableExports": 6,
-      "documentedExports": 6
-    },
-    {
       "path": "src/presentation/render/webgl-host-capabilities.ts",
       "logicalLinesOfCode": 42,
       "physicalLines": 124,
@@ -280,6 +324,17 @@
       "documentedExports": 1
     },
     {
+      "path": "src/domain/fixed-step.ts",
+      "logicalLinesOfCode": 31,
+      "physicalLines": 122,
+      "cyclomaticComplexity": 5,
+      "halsteadVolume": 788.7516169382245,
+      "maintainabilityIndex": 79.53305967529857,
+      "longestClassLines": 0,
+      "documentableExports": 6,
+      "documentedExports": 6
+    },
+    {
       "path": "src/shared/statistics.ts",
       "logicalLinesOfCode": 32,
       "physicalLines": 88,
@@ -289,6 +344,28 @@
       "longestClassLines": 0,
       "documentableExports": 4,
       "documentedExports": 4
+    },
+    {
+      "path": "src/presentation/render/precision-cubes.ts",
+      "logicalLinesOfCode": 30,
+      "physicalLines": 81,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 631.1007625814906,
+      "maintainabilityIndex": 81.68378162505539,
+      "longestClassLines": 0,
+      "documentableExports": 3,
+      "documentedExports": 3
+    },
+    {
+      "path": "src/shared/frame-window.ts",
+      "logicalLinesOfCode": 29,
+      "physicalLines": 99,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 493.305186263697,
+      "maintainabilityIndex": 83.28394184194346,
+      "longestClassLines": 0,
+      "documentableExports": 2,
+      "documentedExports": 2
     },
     {
       "path": "src/domain/session-seed.ts",
@@ -313,12 +390,56 @@
       "documentedExports": 10
     },
     {
+      "path": "src/domain/floating-origin.ts",
+      "logicalLinesOfCode": 23,
+      "physicalLines": 130,
+      "cyclomaticComplexity": 2,
+      "halsteadVolume": 679.4319952701238,
+      "maintainabilityIndex": 85.83445653214773,
+      "longestClassLines": 0,
+      "documentableExports": 5,
+      "documentedExports": 5
+    },
+    {
+      "path": "src/app/main.ts",
+      "logicalLinesOfCode": 21,
+      "physicalLines": 39,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 362.4623043577585,
+      "maintainabilityIndex": 90.11555000815372,
+      "longestClassLines": 0,
+      "documentableExports": 0,
+      "documentedExports": 0
+    },
+    {
+      "path": "src/features/engine/ports.ts",
+      "logicalLinesOfCode": 22,
+      "physicalLines": 99,
+      "cyclomaticComplexity": 1,
+      "halsteadVolume": 274.01923055728344,
+      "maintainabilityIndex": 91.50648115570269,
+      "longestClassLines": 0,
+      "documentableExports": 5,
+      "documentedExports": 5
+    },
+    {
       "path": "src/features/diagnostics/gpu-markers.ts",
       "logicalLinesOfCode": 17,
       "physicalLines": 91,
       "cyclomaticComplexity": 5,
       "halsteadVolume": 407.7022625526444,
       "maintainabilityIndex": 92.69715059760412,
+      "longestClassLines": 0,
+      "documentableExports": 2,
+      "documentedExports": 2
+    },
+    {
+      "path": "src/presentation/render/browser-frame-loop.ts",
+      "logicalLinesOfCode": 18,
+      "physicalLines": 62,
+      "cyclomaticComplexity": 2,
+      "halsteadVolume": 209.2150500951926,
+      "maintainabilityIndex": 95.93049163400151,
       "longestClassLines": 0,
       "documentableExports": 2,
       "documentedExports": 2
@@ -333,17 +454,6 @@
       "longestClassLines": 0,
       "documentableExports": 4,
       "documentedExports": 4
-    },
-    {
-      "path": "src/app/main.ts",
-      "logicalLinesOfCode": 14,
-      "physicalLines": 28,
-      "cyclomaticComplexity": 3,
-      "halsteadVolume": 230.62385799360038,
-      "maintainabilityIndex": 99.26517333266784,
-      "longestClassLines": 0,
-      "documentableExports": 0,
-      "documentedExports": 0
     }
   ]
 }

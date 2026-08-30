@@ -120,7 +120,7 @@ The target remains 70. Files below it are listed in every QA report, worst first
 - Issue: <https://github.com/karellopez/Demiurge/issues/1>
 - Review by: end of phase 10 (the optimisation pass), when file shapes settle.
 
-## 3d. The ratchet does not tighten whole-project coverage
+## 3d. The ratchet does not tighten whole-project coverage or the maintainability index
 
 ### Context
 
@@ -136,19 +136,29 @@ for a good reason. A floor of 98% would therefore mandate an ADR for each new
 adapter, which converts a safeguard into paperwork and trains everyone to treat
 threshold changes as routine — exactly what the ratchet rule exists to prevent.
 
+The maintainability index is excluded for a related reason, discovered the first
+time phase 1 added real adapter code. Ratcheted to 61 from a repository of a
+dozen small pure modules, it then failed on a 173-line engine loop and a 218-line
+renderer — files that are large because they do a real job, not because they are
+badly written. Since 3c already establishes that this metric measures size far
+more than difficulty, auto-ratcheting it does not encode rising quality; it
+encodes how small the codebase happened to be when it was last measured, and then
+demands every new adapter be fragmented to match.
+
 ### Decision
 
-The ratchet tightens the core-layer coverage, the mutation score, TSDoc
-coverage, duplication and the maintainability index. It does **not** tighten the
-two whole-project coverage numbers, which keep the floors the brief set.
+The ratchet tightens the core-layer coverage, the mutation score, TSDoc coverage
+and duplication. It does **not** tighten the two whole-project coverage numbers
+or the maintainability index; those keep floors chosen deliberately and raised by
+hand.
 
 `shared/` and `domain/` are pure and fully testable in Node, so their floors do
 ratchet, and they sit at 98% lines and branches today.
 
 ### Consequences
 
-- The metrics that measure quality get steadily harder; the metric that measures
-  the ratio of logic to adapters does not masquerade as one.
+- The metrics that measure quality get steadily harder; the two that measure the
+  shape of the codebase rather than its quality do not masquerade as ones that do.
 - CI still enforces 80% / 75% overall, so coverage cannot quietly collapse.
 - If overall coverage should be raised, it is raised deliberately, in a commit
   that says so, rather than by a tool reacting to a temporarily small codebase.

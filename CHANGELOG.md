@@ -11,6 +11,34 @@ Version tags begin at phase 5; before that the project is pre-release and the
 
 ### Added
 
+- **Phase 1 — foundation.**
+  - Floating origin. Simulation positions are f64 metres; each frame the
+    camera's position becomes the render origin and everything is drawn at
+    `f32(world − camera)`. Subtraction happens in f64, the cast afterwards; that
+    ordering is the whole technique. A point at 4.5e12 m round-trips to within a
+    millimetre, and a camera creeping forward a centimetre per frame moves a
+    distant point smoothly rather than in 500 km snaps.
+  - Fixed-step accumulator at 120 Hz with a five-substep cap and a
+    spiral-of-death guard that discards debt rather than carrying it, so a tab
+    restored after ten minutes costs one slow frame instead of a locked tab.
+    Simulated time agrees to within one step at 60 Hz and at 144 Hz.
+  - `shared/math/vec3.ts` — double-precision vectors with an out-parameter
+    convention, so no frame-loop operation allocates.
+  - `shared/frame-window.ts` — a pre-allocated rolling window of frame times,
+    shared by the F3 overlay and, from phase 10, the adaptive quality controller.
+  - The engine: a fixed-step simulation driving a variable-step render, with the
+    timing policy in pure domain code and only the mutable accumulator in the
+    feature layer.
+  - A logarithmic depth buffer, spanning 0.01 m to 1e13 m in one pass
+    (ADR 0005).
+  - The phase-1 acceptance scene: a one-metre cube at 1 au and another at
+    4.5e12 m, in one frame, stable and free of z-fighting.
+  - The F3 statistics overlay: frame time, p50/p95/p99, draw calls and triangles
+    against the tier budget, steps run and simulated time abandoned. Readings
+    over budget are marked with weight and a symbol as well as colour.
+
+### Added
+
 - **Phase 0 — repository and quality rig.**
   - Five-layer architecture with machine-enforced boundaries: `app` to
     `presentation` to `features` to `domain` to `shared`, dependencies inward

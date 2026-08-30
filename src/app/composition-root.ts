@@ -12,12 +12,19 @@
 import { resolveSessionSeed } from '@domain/session-seed';
 import { detectQualityTier } from '@features/diagnostics/detect-quality-tier';
 import type { DiagnosticsSink } from '@features/diagnostics/ports';
+import { createEngine, type Engine } from '@features/engine/engine';
+import {
+  createAnimationFrameScheduler,
+  createPerformanceClock,
+} from '@presentation/render/browser-frame-loop';
+import { createPrecisionScene } from '@presentation/render/precision-scene';
 import { probeHostCapabilities } from '@presentation/render/webgl-host-capabilities';
 import {
   combineDiagnosticsSinks,
   createConsoleDiagnosticsSink,
   mountBootScreen,
 } from '@presentation/ui/boot-screen';
+import { mountStatsOverlay, type StatsOverlay } from '@presentation/ui/stats-overlay';
 import { err, ok, type Result } from '@shared/result';
 
 /** Why start-up could not proceed. Expected failures, not programmer errors. */
@@ -34,6 +41,11 @@ export interface BootOptions {
    * player has not chosen one, in which case the default universe is loaded.
    */
   readonly requestedSeed?: string | undefined;
+  /**
+   * Whether to start the render loop. The integration tests mount the UI in a
+   * DOM without a GPU and only check the wiring, so they leave this off.
+   */
+  readonly startRenderLoop?: boolean;
 }
 
 /** A started application, and the handle needed to tear it down again. */
@@ -42,6 +54,10 @@ export interface RunningApplication {
   readonly tier: string;
   /** The canonical seed this universe was generated from. */
   readonly seedPhrase: string;
+  /** The statistics overlay, so `F3` can toggle it. */
+  readonly stats: StatsOverlay;
+  /** The engine, or `undefined` when the render loop was not started. */
+  readonly engine: Engine | undefined;
   /** Releases everything the application holds. */
   dispose(): void;
 }
@@ -61,9 +77,22 @@ export function readSeedFromHash(hash: string): string | undefined {
 }
 
 /**
+ * Creates the canvas the scene renders into.
+ *
+ * @param host - The element to append it to.
+ * @returns The canvas.
+ */
+function createSceneCanvas(host: HTMLElement): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'scene';
+  host.append(canvas);
+  return canvas;
+}
+
+/**
  * Wires and starts the application.
  *
- * @param options - The mount point and the requested seed.
+ * @param options - The mount point, the requested seed, and whether to render.
  * @returns The running application, or the reason it could not start.
  */
 export function startApplication(options: BootOptions): Result<RunningApplication, BootFailure> {
@@ -79,16 +108,34 @@ export function startApplication(options: BootOptions): Result<RunningApplicatio
 
   const session = resolveSessionSeed(options.requestedSeed);
   const selection = detectQualityTier(capabilities);
+
   const sink: DiagnosticsSink = combineDiagnosticsSinks([
     mountBootScreen(host),
     createConsoleDiagnosticsSink(),
   ]);
   sink.report({ selection, capabilities, seedPhrase: session.phrase });
 
+  const clock = createPerformanceClock();
+  const stats = mountStatsOverlay(host, selection.tier, () => clock.nowSeconds() * 1000);
+
+  const engine = options.startRenderLoop
+    ? createEngine({
+        clock,
+        scheduler: createAnimationFrameScheduler(),
+        scene: createPrecisionScene(createSceneCanvas(host)),
+        stats,
+      })
+    : undefined;
+  engine?.start();
+
   return ok({
     tier: selection.tier,
     seedPhrase: session.phrase,
+    stats,
+    engine,
     dispose(): void {
+      engine?.stop();
+      stats.dispose();
       host.replaceChildren();
     },
   });

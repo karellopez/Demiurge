@@ -23,7 +23,7 @@ npm run qa -- --ratchet   # after a green run, tighten what the code outgrew
 | Mutation score, `shared/` + `domain/`              | Stryker                                    | ≥ 98% (ratcheted)                |
 | Cyclomatic complexity                              | ESLint `complexity`                        | ≤ 10 per function                |
 | Cognitive complexity                               | `sonarjs/cognitive-complexity`             | ≤ 15 per function                |
-| Maintainability index                              | `scripts/qa/source-metrics.ts`             | ≥ 61 per file, worst 10 reported |
+| Maintainability index                              | `scripts/qa/source-metrics.ts`             | ≥ 60 per file, worst 10 reported |
 | File and class size                                | `scripts/qa/source-metrics.ts`             | ≤ 400 lines / ≤ 200 lines        |
 | Code duplication                                   | `jscpd`                                    | < 2% of lines (ratcheted)        |
 | Circular dependencies                              | `dependency-cruiser`                       | **0**                            |
@@ -51,17 +51,29 @@ Lowering any threshold requires an ADR in `docs/adr/` stating why, linking an
 issue, and giving an expiry date. There is exactly one such ADR today
 (`0003`, the maintainability index floor).
 
-**What the ratchet does not touch.** The two whole-project coverage numbers keep
-the floors the brief set (80% lines, 75% branches) and are never tightened
+**What the ratchet does not touch.** The two whole-project coverage numbers and
+the maintainability index keep deliberately chosen floors and are never tightened
 automatically. They move with the _ratio_ of pure logic to adapter code rather
 than with quality: landing a WebGL renderer, which Playwright exercises and
 Vitest cannot, legitimately lowers overall unit coverage while improving the
 project. Pinning them at today's 100% would guarantee an ADR every time an
 adapter arrives, turning the rule into paperwork instead of a safeguard.
 
+The maintainability index is excluded for the reason given in ADR 0003c: it
+measures file size far more than difficulty, so ratcheting it would demand that
+every new adapter be fragmented to match whatever the codebase looked like when
+it was last measured.
+
 The core layers are different. `shared/` and `domain/` are pure and fully
 testable in Node, so there is no honest reason for their coverage or mutation
 score to fall, and those ratchet freely — they sit at 98% today.
+
+**Equivalent mutants.** A few mutants cannot be killed because they do not change
+observable behaviour — mutating a pure cache is the usual case, since removing
+the cache entirely gives identical answers, only slower. Those are marked at the
+site with `// Stryker disable next-line all: <why>` and a sentence explaining why
+no test could tell the difference. That is a claim a reviewer can check, unlike a
+lowered threshold.
 
 Inline rule suppressions follow the same principle: a bare `eslint-disable` fails
 lint. Every suppression must read

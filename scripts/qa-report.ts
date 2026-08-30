@@ -57,12 +57,18 @@ const RATCHET_MARGIN = 2;
  * The core layers are a different matter. `shared/` and `domain/` are pure and
  * fully testable in Node, so there is no honest reason for their coverage or
  * mutation score to fall, and those do ratchet.
+ *
+ * The maintainability index is absent for a related reason. It measures file
+ * size far more than it measures difficulty — the lowest scores in this
+ * repository belong to declarative tables with a cyclomatic complexity of 1 —
+ * so ratcheting it encodes how small the codebase happened to be when it was
+ * last measured, and then demands that every new adapter be fragmented to match.
+ * Its floor is chosen deliberately in an ADR and raised by hand.
  */
 const RATCHETABLE_GATES: Record<string, string> = {
   'coverage-lines-core': 'coverageLinesCore',
   'coverage-branches-core': 'coverageBranchesCore',
   mutation: 'mutationScore',
-  maintainability: 'maintainabilityIndexMin',
   tsdoc: 'tsdocCoveragePercentMin',
   duplication: 'duplicationPercentMax',
 };

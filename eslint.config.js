@@ -192,6 +192,23 @@ export default tseslint.config(
     },
   },
 
+  // The documented zero-allocation hot paths. These write into a caller-supplied
+  // `out` vector or advance a caller-supplied state record in place, which is
+  // exactly what `no-param-reassign` exists to stop. The alternative is a fresh
+  // object from every operation, which is hundreds of allocations per frame and
+  // the reason the convention exists at all. Every such site carries a
+  // `// PERF: mutable for zero-alloc` comment saying so.
+  {
+    files: [
+      'src/shared/math/**/*.ts',
+      'src/domain/floating-origin.ts',
+      'src/features/engine/engine.ts',
+    ],
+    rules: {
+      'no-param-reassign': ['error', { props: false }],
+    },
+  },
+
   // Tooling and tests: relaxed budgets, Node globals, console allowed.
   {
     files: TOOLING_GLOBS,
@@ -224,6 +241,9 @@ export default tseslint.config(
       'unicorn/max-nested-calls': 'off',
       // `fc.assert` / `fc.property` is fast-check's documented calling style.
       'import-x/no-named-as-default-member': 'off',
+      // Assigning fresh fixtures to suite-level bindings in `beforeEach` is the
+      // standard way to isolate tests from one another.
+      'unicorn/no-top-level-assignment-in-function': 'off',
     },
   },
 

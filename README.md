@@ -16,10 +16,11 @@ rather than a remote creator who set it going and left. That is the register the
 whole thing is written in: reverent about the cosmos, unbothered about destroying
 it.
 
-> **Build status: phase 0 of 11 complete.** The repository, the quality rig and
-> the boot path exist and are green. The renderer, the solar system, the surface
-> world and the weapons arrive across the phases listed below. `docs/` describes
-> the design each phase is built against, and marks clearly what is not yet real.
+> **Build status: phase 1 of 11 complete.** The precision foundation is in and
+> proved: a one-metre cube at 1 au and another at 4.5e12 m render in the same
+> frame, stable and free of z-fighting. The solar system, the surface world and
+> the weapons arrive across the phases listed below. `docs/` describes the design
+> each phase is built against, and marks clearly what is not yet real.
 
 ## Sixty-second start
 
@@ -148,8 +149,8 @@ See [`docs/quality.md`](docs/quality.md).
 | #   | Phase                                                             | State    |
 | --- | ----------------------------------------------------------------- | -------- |
 | 0   | Repository and quality rig                                        | **done** |
-| 1   | Foundation — engine loop, f64 math, floating origin, depth        | next     |
-| 2   | Solar system — data, Kepler propagation, orbit lines, time warp   |          |
+| 1   | Foundation — engine loop, f64 math, floating origin, depth        | **done** |
+| 2   | Solar system — data, Kepler propagation, orbit lines, time warp   | next     |
 | 3   | Cameras — rig, follow modes, transitions, scale presets           |          |
 | 4   | Rendering — HDR, AgX, TAA, bloom, PBR, Sun, rings, eclipses       |          |
 | 5   | Atmospheres and clouds                                            |          |

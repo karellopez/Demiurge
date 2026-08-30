@@ -124,3 +124,68 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* -- scene canvas -------------------------------------------------------- */
+
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+
+/* The title screen floats above the scene while it is still visible. */
+.boot-screen {
+  position: relative;
+  z-index: 1;
+}
+
+/* -- statistics overlay (F3) --------------------------------------------- */
+
+.stats {
+  position: fixed;
+  top: calc(var(--step) * 2);
+  right: calc(var(--step) * 2);
+  z-index: 2;
+  min-width: 280px;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  padding: calc(var(--step) * 1.5) calc(var(--step) * 2);
+  backdrop-filter: blur(2px);
+}
+
+.stat {
+  display: flex;
+  gap: calc(var(--step) * 2);
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 2px 0;
+}
+
+.stat__label {
+  color: var(--ink-dim);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stat__value {
+  color: var(--signal);
+  text-align: right;
+}
+
+/*
+ * Over budget. Colour alone never conveys state here, so the value also gains a
+ * marker and a heavier weight, which is what makes this legible to a colourblind
+ * reader and against a bright Sun.
+ */
+.stat__value--over {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.stat__value--over::after {
+  content: ' !';
+}
