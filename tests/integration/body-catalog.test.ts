@@ -182,3 +182,39 @@ describe('a malformed catalogue', () => {
     );
   });
 });
+
+describe('tree order', () => {
+  it('starts at the root', () => {
+    expect(catalog.inTreeOrder[0]).toBe(catalog.root);
+  });
+
+  it('holds every body exactly once', () => {
+    expect(catalog.inTreeOrder).toHaveLength(catalog.all.length);
+    expect(new Set(catalog.inTreeOrder.map((body) => body.id)).size).toBe(catalog.all.length);
+  });
+
+  it('puts a moon immediately after its planet', () => {
+    const ids = catalog.inTreeOrder.map((body) => body.id);
+    expect(ids[ids.indexOf('earth') + 1]).toBe('moon');
+  });
+
+  it('keeps a body ahead of everything that orbits it', () => {
+    const ids = catalog.inTreeOrder.map((body) => body.id);
+    for (const body of catalog.all) {
+      if (body.parentId === undefined) {
+        continue;
+      }
+      expect(ids.indexOf(body.parentId), `${body.name} appears before its parent`).toBeLessThan(
+        ids.indexOf(body.id),
+      );
+    }
+  });
+
+  it('differs from file order, which is why it exists', () => {
+    // If the catalogue file ever happened to be written in tree order this test
+    // would pass vacuously, so it asserts the difference rather than assuming it.
+    expect(catalog.inTreeOrder.map((body) => body.id)).not.toStrictEqual(
+      catalog.all.map((body) => body.id),
+    );
+  });
+});

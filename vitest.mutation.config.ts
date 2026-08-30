@@ -14,7 +14,10 @@ import { defineConfig } from 'vitest/config';
  *
  * Leaving them out was not a neutral choice: without them every arithmetic
  * mutant in the rotation from the orbital plane into the ecliptic survived,
- * because nothing else in the unit suite pins that matrix down.
+ * because nothing else in the unit suite pins that matrix down. The same is
+ * true of the camera rig and the body facts: both are filed as integration
+ * tests because they run against the real catalogue, and both are the only
+ * thing standing between a mutated camera transition and a green run.
  *
  * The DOM-dependent integration tests and the allocation tests stay out. The
  * first would drag a DOM into every mutant run for no extra signal; the second
@@ -36,6 +39,8 @@ export default defineConfig({
       'tests/unit/**/*.test.ts',
       'tests/integration/horizons-accuracy.test.ts',
       'tests/integration/body-catalog.test.ts',
+      'tests/integration/body-facts.test.ts',
+      'tests/integration/camera-rig.test.ts',
     ],
     environment: 'node',
   },

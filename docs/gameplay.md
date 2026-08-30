@@ -80,6 +80,72 @@ then jetpack, then rover, then ship.
 - **Persistence** to IndexedDB, keyed by seed and body, exportable as JSON so a
   world can be shared.
 
+## Cameras
+
+One rig, five ways of holding it. Every body including the Sun is followable, at
+any scale, and the camera never clips a surface and never cuts.
+
+`C` cycles the modes. Each one holds a different thing still, and that is the
+whole difference between them:
+
+| Mode             | What it holds still                                                       |
+| ---------------- | ------------------------------------------------------------------------- |
+| **Orbit**        | The body, centred. Drag to swing around it, wheel to zoom.                |
+| **Locked frame** | A point on the surface, so the terrain stops sliding and the stars wheel. |
+| **Inertial**     | The stars, so you can see how fast the body actually spins.               |
+| **Sun-relative** | The terminator, held off the star line, so relief throws shadows.         |
+| **Cinematic**    | Nothing — a slow dolly for looking rather than working.                   |
+
+Sun-relative is withheld when the Sun itself is followed: a star has no
+terminator, and the direction to the Sun is undefined at its centre. The cycle
+skips it rather than offering a mode that quietly does nothing.
+
+Distance is measured in **body radii**, not metres, because that is the only unit
+under which one number means the same thing at Phobos and at Jupiter. Thirty
+radii frames a body whether it is eleven kilometres across or seventy thousand.
+Zoom is exponential and clamped at 1.05 radii, just above the surface, so no zoom
+at any scale can put the camera inside a planet.
+
+Selecting a body starts a timed transition rather than a cut: 0.8 s for a nearby
+move, 2 s across the system, log-scaled in radii between them, eased with a
+smoothstep that does not overshoot. Selecting again mid-transition re-aims from
+wherever the camera actually is, so clicking through six bodies in two seconds is
+a continuous path rather than six teleports.
+
+### Finding a body
+
+Every body is reachable four ways: the quick bar (the Sun and the eight planets,
+one click each), the searchable list, `[` and `]` to step through that list in
+order, and a click on any row. The list is indented by what orbits what, and a
+search keeps the parents of a match, so a moon is never shown orphaned under
+nothing.
+
+The card under the list is live: distance from the camera and from the Sun,
+radius, mass, surface gravity against Earth's, rotation period and orbital
+period. Retrograde rotation is spelled out in words rather than left as a minus
+sign nobody reads. Local solar time joins the card in phase 4, with the IAU
+rotation model that gives a body a defined prime meridian.
+
+## Scale
+
+Real sizes and real distances are the default, and they are almost entirely
+empty space: if Earth were a pixel, Neptune would be off the end of a tennis
+court. Two independent exaggerations make that legible without lying about which
+is which — `distanceScale` compresses the gaps (1 down to 0.001) and `sizeScale`
+inflates the bodies (1 up to 1000).
+
+`1`, `2` and `3` select the presets: **True scale**, **Orrery** (the whole system
+in one view, bodies still recognisable) and **Textbook** (the diagram from a
+classroom wall). Each animates over 1.5 s, geometrically rather than linearly,
+because the difference between 0.01 and 0.02 is enormous and the difference
+between 0.9 and 0.91 is nothing.
+
+Scale is a **rendering** transform and never a simulation one. Positions,
+orbits, gravity and collision are always computed in true metres; the exaggeration
+is applied once, at the floating-origin boundary, on the way to the GPU. That is
+what makes "changing scale must never break orbits, cameras, landing or
+collision" true by construction rather than by vigilance.
+
 ## Flight
 
 Two profiles. **Arcade** is the default: velocity follows input, inertial
@@ -121,6 +187,8 @@ All remappable, with gamepad support.
 | `C`                      | Cycle camera           |
 | `T`                      | Target                 |
 | `[` / `]`                | Cycle bodies           |
+| `B`                      | Body browser           |
+| `1` / `2` / `3`          | Scale presets          |
 | `L`                      | Landing assist         |
 | `G`                      | Gear                   |
 | `E`                      | Exit or board the ship |

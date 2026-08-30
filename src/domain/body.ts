@@ -73,8 +73,18 @@ export interface Body {
 
 /** The whole catalogue, indexed for the lookups the simulation actually does. */
 export interface BodyCatalog {
-  /** Every body, in catalogue order. */
+  /** Every body, in the order the catalogue file lists them. */
   readonly all: readonly Body[];
+  /**
+   * Every body in tree order: the root, then each of its satellites followed
+   * immediately by that satellite's own.
+   *
+   * This is the order the body list displays and the order `[` and `]` walk, and
+   * it is computed once here so the two cannot drift apart. The file order is
+   * not the same thing — a catalogue that groups all the planets and then all
+   * the moons is perfectly reasonable to read and useless to step through.
+   */
+  readonly inTreeOrder: readonly Body[];
   /**
    * Finds a body by id.
    *
@@ -130,4 +140,23 @@ export function surfaceGravity(body: Body): number {
   const radiusMeters = body.equatorialRadius;
   // GM is catalogued in km^3/s^2; the conversion to m^3/s^2 is 1e9.
   return (body.gravitationalParameter * 1e9) / (radiusMeters * radiusMeters);
+}
+
+/** Newton's gravitational constant, in m^3 kg^-1 s^-2 (CODATA 2018). */
+const GRAVITATIONAL_CONSTANT = 6.6743e-11;
+
+/**
+ * Computes a body's mass from its standard gravitational parameter.
+ *
+ * GM is the measured quantity — it is known to far more digits than either G or
+ * the mass alone, because it is what a spacecraft's trajectory actually
+ * responds to. The mass is derived from it rather than catalogued, so the two
+ * cannot disagree.
+ *
+ * @param body - The body to weigh.
+ * @returns The mass, in kilograms.
+ */
+export function mass(body: Body): number {
+  // GM is catalogued in km^3/s^2; the conversion to m^3/s^2 is 1e9.
+  return (body.gravitationalParameter * 1e9) / GRAVITATIONAL_CONSTANT;
 }

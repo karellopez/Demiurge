@@ -34,3 +34,6 @@ Thumbs.db
 npm-debug.log*
 yarn-error.log*
 *.log
+
+# Ad-hoc render captures taken while debugging the scene.
+scene-capture*.png

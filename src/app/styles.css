@@ -25,6 +25,15 @@
   box-sizing: border-box;
 }
 
+/*
+ * `hidden` must win over any `display` a component sets on itself. Without this,
+ * setting `display: flex` on a panel silently breaks its own hide toggle - which
+ * is exactly what happened to the body browser.
+ */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   height: 100%;
@@ -222,6 +231,19 @@ body {
  * Paused and reversed are states a player must notice at a glance. Colour alone
  * never conveys state here, so each also gains a marker.
  */
+/*
+ * The simulated date has left the window the orbital element fit covers. Marked
+ * with a symbol and a weight as well as a colour, like every other state here.
+ */
+.time-hud__date--unfitted {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.time-hud__date--unfitted::after {
+  content: ' ≈';
+}
+
 .time-hud__rate--paused {
   color: var(--ink-dim);
 }
@@ -247,4 +269,132 @@ body {
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+/* -- body browser and stats card ----------------------------------------- */
+
+.browser {
+  position: fixed;
+  top: calc(var(--step) * 2);
+  left: calc(var(--step) * 2);
+  z-index: 2;
+  width: 300px;
+  max-height: calc(100vh - var(--step) * 4);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  backdrop-filter: blur(2px);
+}
+
+.browser__search {
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  padding: var(--step) calc(var(--step) * 1.5);
+}
+
+.browser__search::placeholder {
+  color: var(--ink-dim);
+}
+
+.browser__search:focus-visible {
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+}
+
+/*
+ * The quick bar: the Sun and the eight planets, two letters each. A twelve-row
+ * scroll to reach Jupiter is the kind of friction that stops people looking.
+ */
+.browser__quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: calc(var(--step) * 0.75) calc(var(--step) * 1.5);
+  border-bottom: 1px solid var(--rule);
+}
+
+.browser__quick-body {
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink-dim);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  min-width: 2.4em;
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.browser__quick-body:hover {
+  color: var(--ink);
+  border-color: var(--signal);
+}
+
+.browser__quick-body:focus-visible {
+  outline: 1px solid var(--signal);
+  outline-offset: 1px;
+}
+
+.browser__list {
+  overflow-y: auto;
+  max-height: 44vh;
+  padding: calc(var(--step) * 0.5) 0;
+}
+
+.browser__body {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink-dim);
+  font: inherit;
+  text-align: left;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.browser__body:hover {
+  color: var(--ink);
+  background: rgb(127 209 232 / 8%);
+}
+
+.browser__body:focus-visible {
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+}
+
+/*
+ * The followed body. Colour alone never carries state here, so the row also
+ * gains a leading marker and a heavier weight.
+ */
+.browser__body--selected {
+  color: var(--signal);
+  font-weight: 700;
+}
+
+.browser__body--selected::before {
+  content: '▸ ';
+  margin-left: -0.9em;
+}
+
+.browser__title {
+  margin: 0;
+  border-top: 1px solid var(--rule);
+  padding: calc(var(--step) * 1.5) calc(var(--step) * 2) var(--step);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.browser__card {
+  padding: 0 calc(var(--step) * 2) calc(var(--step) * 1.5);
+}
+
+.browser__card .readout {
+  padding: calc(var(--step) * 0.75) 0;
 }

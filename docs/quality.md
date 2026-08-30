@@ -28,7 +28,7 @@ npm run qa -- --ratchet   # after a green run, tighten what the code outgrew
 | Code duplication                                   | `jscpd`                                    | < 2% of lines (ratcheted)        |
 | Circular dependencies                              | `dependency-cruiser`                       | **0**                            |
 | Architecture violations                            | `dependency-cruiser`                       | **0**                            |
-| Dead code, unused exports, unused deps             | `knip`                                     | **0**                            |
+| Dead code, unused exports, unused deps             | `knip`[^knip]                              | **0**                            |
 | TSDoc coverage on exported API                     | `scripts/qa/source-metrics.ts`             | ≥ 98% (ratcheted)                |
 | Bundle size — initial JS, gzip                     | `size-limit`                               | ≤ 300 kB                         |
 | Bundle size — total JS, gzip                       | `size-limit`                               | ≤ 1.5 MB                         |
@@ -37,6 +37,15 @@ npm run qa -- --ratchet   # after a green run, tighten what the code outgrew
 | Frame-time regression                              | `npm run bench:flythrough`                 | p95 ≤ baseline + 10%             |
 
 Thresholds live in `scripts/qa/thresholds.json`.
+
+[^knip]:
+    Values are checked strictly: an exported function or constant that nothing
+    imports is a failure. Exported **types** referenced within their own file are
+    not, because a type naming the parameter or return of an exported signature
+    is part of the public API whether or not a caller happens to spell it out.
+    That is `ignoreExportsUsedInFile: { interface: true, type: true }` in
+    `knip.json`, and it is scoped to types on purpose — dead values are still
+    caught.
 
 ## The ratchet
 

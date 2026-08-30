@@ -67,6 +67,7 @@ export default defineConfig({
         'src/presentation/render/body-appearance.ts',
         'src/presentation/render/orbit-line.ts',
         'src/presentation/render/space-scene.ts',
+        'src/presentation/render/render-target.ts',
       ],
       // Gates mirror docs/quality.md §5.1. `scripts/qa-report.ts` re-checks the
       // per-layer floors for `shared/` and `domain/`, which Vitest thresholds

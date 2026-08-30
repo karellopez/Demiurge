@@ -9,6 +9,7 @@
     "tests/visual/**/*.spec.ts"
   ],
   "project": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"],
+  "ignoreExportsUsedInFile": { "interface": true, "type": true },
   "ignoreDependencies": [
     "@size-limit/file",
     "@stryker-mutator/vitest-runner",

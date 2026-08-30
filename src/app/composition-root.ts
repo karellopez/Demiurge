@@ -4,39 +4,32 @@
  * Every dependency in the project is passed in through a constructor or a
  * factory argument, and every one of those wires is tied here. There is no
  * service locator, no global singleton and no module-level mutable state, so
- * reading this file tells you the entire shape of the running program.
+ * reading this file tells you the entire shape of the running program. The
+ * builders it calls live in {@link ./wiring}.
  *
  * @module
  */
 
-import type { BodyCatalog } from '@domain/body';
+import type { ScaleSettings } from '@domain/scale';
 import { resolveSessionSeed } from '@domain/session-seed';
-import { INITIAL_TIME_SCALE, multiplierFor, type TimeScaleState } from '@domain/time-scale';
+import { multiplierFor, type TimeScaleState } from '@domain/time-scale';
 import { detectQualityTier } from '@features/diagnostics/detect-quality-tier';
-import type { DiagnosticsSink } from '@features/diagnostics/ports';
-import { createEngine, type Engine } from '@features/engine/engine';
-import type { Clock, FrameStats, StatsSink } from '@features/engine/ports';
+import type { Engine } from '@features/engine/engine';
 import { buildCatalog } from '@features/space/body-catalog';
 import type { RawCatalog } from '@features/space/catalog-schema';
-import {
-  createAnimationFrameScheduler,
-  createPerformanceClock,
-} from '@presentation/render/browser-frame-loop';
-import { createSolarSystemVisuals, placeVisual } from '@presentation/render/solar-system-scene';
-import { createSpaceScene } from '@presentation/render/space-scene';
+import { createPerformanceClock } from '@presentation/render/browser-frame-loop';
+import type { SpaceScene } from '@presentation/render/space-scene';
 import { probeHostCapabilities } from '@presentation/render/webgl-host-capabilities';
-import {
-  combineDiagnosticsSinks,
-  createConsoleDiagnosticsSink,
-  mountBootScreen,
-} from '@presentation/ui/boot-screen';
-import { mountStatsOverlay, type StatsOverlay } from '@presentation/ui/stats-overlay';
-import { mountTimeHud, type TimeHud } from '@presentation/ui/time-hud';
+import { mountBodyBrowser, type BodyBrowser } from '@presentation/ui/body-browser';
+import type { mountBootScreen } from '@presentation/ui/boot-screen';
+import type { StatsOverlay } from '@presentation/ui/stats-overlay';
+import type { TimeHud } from '@presentation/ui/time-hud';
 import { err, ok, type Result } from '@shared/result';
 
 import rawCatalog from '../../data/bodies.json';
 
 import type { BootFailure } from './boot-failure';
+import { INITIAL_BODY_ID, buildScene, createCardRefresher, mountUi, startEngine } from './wiring';
 
 /** Everything the caller needs to hand `startApplication` its outside world. */
 export interface BootOptions {
@@ -54,7 +47,7 @@ export interface BootOptions {
   readonly startRenderLoop?: boolean;
 }
 
-/** A started application, and the handle needed to tear it down again. */
+/** A started application, and the handles it exposes to the input layer. */
 export interface RunningApplication {
   /** The tier the session started at. */
   readonly tier: string;
@@ -64,116 +57,78 @@ export interface RunningApplication {
   readonly bodyCount: number;
   /** The statistics overlay, so `F3` can toggle it. */
   readonly stats: StatsOverlay;
-  /**
-   * Clears the title screen.
-   *
-   * The simulation runs behind it from the first frame, so this is a curtain
-   * rather than a loading gate. Phase 4 puts the shader warm-up progress here,
-   * which is the point at which waiting for the player to press a key stops
-   * being politeness and starts being useful.
-   */
-  dismissTitleScreen(): void;
+  /** The body browser, so `B` can toggle it. */
+  readonly browser: BodyBrowser;
+  /** The scene, or `undefined` when the render loop was not started. */
+  readonly scene: SpaceScene | undefined;
   /** The engine, or `undefined` when the render loop was not started. */
   readonly engine: Engine | undefined;
+  /** Clears the title screen. */
+  dismissTitleScreen(): void;
   /**
    * Applies a new time-warp setting to both the engine and the readout.
    *
    * @param state - The new position on the ladder.
    */
   setTimeScale(state: TimeScaleState): void;
+  /**
+   * Starts a scale transition.
+   *
+   * @param settings - The exaggeration to move to.
+   */
+  setScale(settings: ScaleSettings): void;
   /** Releases everything the application holds. */
   dispose(): void;
 }
 
-/**
- * Fans one frame's statistics out to several sinks.
- *
- * @param sinks - The sinks to notify.
- * @returns A sink that forwards to all of them.
- */
-function combineStatsSinks(sinks: readonly StatsSink[]): StatsSink {
-  return {
-    publish(stats: FrameStats): void {
-      for (const sink of sinks) {
-        sink.publish(stats);
-      }
-    },
-  };
-}
-
-/**
- * Creates the canvas the scene renders into.
- *
- * @param host - The element to append it to.
- * @returns The canvas.
- */
-function createSceneCanvas(host: HTMLElement): HTMLCanvasElement {
-  const canvas = document.createElement('canvas');
-  canvas.className = 'scene';
-  host.append(canvas);
-  return canvas;
-}
-
-/** The pieces of chrome the composition root mounts. */
-interface MountedUi {
+/** Everything `startApplication` settles before it can hand back a handle. */
+interface ApplicationParts {
+  readonly host: HTMLElement;
+  readonly tier: string;
+  readonly seedPhrase: string;
+  readonly bodyCount: number;
   readonly bootScreen: ReturnType<typeof mountBootScreen>;
   readonly stats: StatsOverlay;
   readonly timeHud: TimeHud;
+  readonly browser: BodyBrowser;
+  readonly scene: SpaceScene | undefined;
+  readonly engine: Engine | undefined;
 }
 
 /**
- * Mounts the interface and reports the boot diagnostics into it.
+ * Gathers the wired pieces into the handle the input layer drives.
  *
- * @param host - The element everything mounts into.
- * @param report - What was settled at boot.
- * @param nowMs - Reads wall-clock milliseconds, for the throttled readouts.
- * @returns Handles for the mounted chrome.
+ * @param parts - Everything already built.
+ * @returns The running application.
  */
-function mountUi(
-  host: HTMLElement,
-  report: Parameters<DiagnosticsSink['report']>[0],
-  nowMs: () => number,
-): MountedUi {
-  const bootScreen = mountBootScreen(host);
-  combineDiagnosticsSinks([bootScreen, createConsoleDiagnosticsSink()]).report(report);
-
-  const stats = mountStatsOverlay(host, report.selection.tier, nowMs);
-  const timeHud = mountTimeHud(host, report.seedPhrase, nowMs);
-  timeHud.setTimeScale(INITIAL_TIME_SCALE);
-
-  return { bootScreen, stats, timeHud };
-}
-
-/**
- * Builds and starts the engine.
- *
- * @param host - The element the scene canvas is appended to.
- * @param catalog - The bodies to simulate.
- * @param clock - The session clock.
- * @param stats - Where per-frame measurements go.
- * @returns The running engine.
- */
-function startEngine(
-  host: HTMLElement,
-  catalog: BodyCatalog,
-  clock: Clock,
-  stats: StatsSink,
-): Engine {
-  const engine = createEngine({
-    clock,
-    scheduler: createAnimationFrameScheduler(),
-    scene: createSpaceScene({
-      canvas: createSceneCanvas(host),
-      catalog,
-      buildVisuals: createSolarSystemVisuals,
-      wallClockSeconds: () => clock.nowSeconds(),
-      place: placeVisual,
-    }),
+function assembleApplication(parts: ApplicationParts): RunningApplication {
+  const { host, bootScreen, stats, timeHud, browser, scene, engine } = parts;
+  return {
+    tier: parts.tier,
+    seedPhrase: parts.seedPhrase,
+    bodyCount: parts.bodyCount,
     stats,
-  });
-  engine.setTimeScale(multiplierFor(INITIAL_TIME_SCALE));
-  engine.start();
-  return engine;
+    browser,
+    scene,
+    engine,
+    dismissTitleScreen(): void {
+      bootScreen.dismiss();
+    },
+    setTimeScale(state: TimeScaleState): void {
+      engine?.setTimeScale(multiplierFor(state));
+      timeHud.setTimeScale(state);
+    },
+    setScale(settings: ScaleSettings): void {
+      scene?.setScale(settings);
+    },
+    dispose(): void {
+      engine?.stop();
+      browser.dispose();
+      timeHud.dispose();
+      stats.dispose();
+      host.replaceChildren();
+    },
+  };
 }
 
 /**
@@ -205,28 +160,34 @@ export function startApplication(options: BootOptions): Result<RunningApplicatio
     nowMs,
   );
 
-  const engine = options.startRenderLoop
-    ? startEngine(host, catalog, clock, combineStatsSinks([stats, timeHud]))
-    : undefined;
+  const scene = options.startRenderLoop ? buildScene(host, catalog, clock) : undefined;
+  const browser = mountBodyBrowser(
+    host,
+    catalog,
+    (bodyId) => {
+      scene?.rig.select(bodyId);
+    },
+    nowMs,
+  );
+  browser.markSelected(INITIAL_BODY_ID);
 
-  return ok({
-    tier: selection.tier,
-    seedPhrase: session.phrase,
-    bodyCount: catalog.all.length,
-    stats,
-    engine,
-    dismissTitleScreen(): void {
-      bootScreen.dismiss();
-    },
-    setTimeScale(state: TimeScaleState): void {
-      engine?.setTimeScale(multiplierFor(state));
-      timeHud.setTimeScale(state);
-    },
-    dispose(): void {
-      engine?.stop();
-      timeHud.dispose();
-      stats.dispose();
-      host.replaceChildren();
-    },
-  });
+  const engine =
+    scene === undefined
+      ? undefined
+      : startEngine(scene, clock, [stats, timeHud, createCardRefresher(browser, scene, catalog)]);
+
+  return ok(
+    assembleApplication({
+      host,
+      tier: selection.tier,
+      seedPhrase: session.phrase,
+      bodyCount: catalog.all.length,
+      bootScreen,
+      stats,
+      timeHud,
+      browser,
+      scene,
+      engine,
+    }),
+  );
 }

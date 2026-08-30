@@ -65,6 +65,8 @@ onto the weakest tier does not ship.
 | `C`                      | Cycle camera           |
 | `T`                      | Target                 |
 | `[` / `]`                | Cycle bodies           |
+| `B`                      | Body browser           |
+| `1` / `2` / `3`          | Scale presets          |
 | `L`                      | Landing assist         |
 | `G`                      | Gear                   |
 | `E`                      | Exit or board the ship |
@@ -154,8 +156,8 @@ See [`docs/quality.md`](docs/quality.md).
 | 0   | Repository and quality rig                                        | **done** |
 | 1   | Foundation — engine loop, f64 math, floating origin, depth        | **done** |
 | 2   | Solar system — data, Kepler propagation, orbit lines, time warp   | **done** |
-| 3   | Cameras — rig, follow modes, transitions, scale presets           | next     |
-| 4   | Rendering — HDR, AgX, TAA, bloom, PBR, Sun, rings, eclipses       |          |
+| 3   | Cameras — rig, follow modes, transitions, scale presets           | **done** |
+| 4   | Rendering — HDR, AgX, TAA, bloom, PBR, Sun, rings, eclipses       | next     |
 | 5   | Atmospheres and clouds                                            |          |
 | 6   | Terrain — cube-sphere quadtree, geomorphing, caves, collision     |          |
 | 7   | Ship and descent — flight models, entry, landing, context handoff |          |

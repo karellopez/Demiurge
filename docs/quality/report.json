@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-30T17:02:17.335Z",
+  "generatedAt": "2026-08-30T18:53:28.809Z",
   "gates": [
     {
       "id": "typecheck",
@@ -21,11 +21,11 @@
       "id": "coverage-lines",
       "name": "Coverage - lines, overall",
       "tool": "vitest v8",
-      "value": "96.12%",
+      "value": "88.54%",
       "threshold": ">= 80.00%",
       "status": "pass",
       "numeric": {
-        "measured": 96.12403100775194,
+        "measured": 88.53681267474371,
         "threshold": 80,
         "direction": "min"
       }
@@ -34,11 +34,11 @@
       "id": "coverage-branches",
       "name": "Coverage - branches, overall",
       "tool": "vitest v8",
-      "value": "89.66%",
+      "value": "81.45%",
       "threshold": ">= 75.00%",
       "status": "pass",
       "numeric": {
-        "measured": 89.65517241379311,
+        "measured": 81.44927536231884,
         "threshold": 75,
         "direction": "min"
       }
@@ -47,11 +47,11 @@
       "id": "coverage-lines-core",
       "name": "Coverage - lines, shared+domain",
       "tool": "vitest v8",
-      "value": "99.65%",
+      "value": "99.77%",
       "threshold": ">= 98.00%",
       "status": "pass",
       "numeric": {
-        "measured": 99.65277777777779,
+        "measured": 99.77116704805492,
         "threshold": 98,
         "direction": "min"
       }
@@ -60,11 +60,11 @@
       "id": "coverage-branches-core",
       "name": "Coverage - branches, shared+domain",
       "tool": "vitest v8",
-      "value": "100.00%",
+      "value": "98.60%",
       "threshold": ">= 98.00%",
       "status": "pass",
       "numeric": {
-        "measured": 100,
+        "measured": 98.6013986013986,
         "threshold": 98,
         "direction": "min"
       }
@@ -73,11 +73,11 @@
       "id": "mutation",
       "name": "Mutation score - shared + domain",
       "tool": "stryker",
-      "value": "98.92%",
+      "value": "98.67%",
       "threshold": ">= 98.00%",
       "status": "pass",
       "numeric": {
-        "measured": 98.92241379310344,
+        "measured": 98.6737400530504,
         "threshold": 98,
         "direction": "min"
       }
@@ -86,12 +86,12 @@
       "id": "maintainability",
       "name": "Maintainability index (worst file)",
       "tool": "scripts/qa (TypeScript AST)",
-      "value": "54.70",
+      "value": "51.95",
       "threshold": ">= 50.00",
       "status": "pass",
       "detail": "worst: src/features/space/body-catalog.ts",
       "numeric": {
-        "measured": 54.70073781942364,
+        "measured": 51.95039857250765,
         "threshold": 50,
         "direction": "min"
       }
@@ -169,7 +169,7 @@
       "value": "clean",
       "threshold": "within .size-limit.json",
       "status": "pass",
-      "detail": "initial JS (every chunk needed for the first frame, gzip): 138.7 kB of 293 kB\ntotal payload (JS + CSS, gzip, excludes fetched imagery): 139.8 kB of 1465 kB"
+      "detail": "initial JS (every chunk needed for the first frame, gzip): 143.4 kB of 293 kB\ntotal payload (JS + CSS, gzip, excludes fetched imagery): 144.9 kB of 1465 kB"
     },
     {
       "id": "vulnerabilities",
@@ -212,25 +212,58 @@
   "files": [
     {
       "path": "src/features/space/body-catalog.ts",
-      "logicalLinesOfCode": 87,
-      "physicalLines": 199,
-      "cyclomaticComplexity": 13,
-      "halsteadVolume": 2636.536176945126,
-      "maintainabilityIndex": 54.70073781942364,
+      "logicalLinesOfCode": 97,
+      "physicalLines": 222,
+      "cyclomaticComplexity": 15,
+      "halsteadVolume": 2918.159475587021,
+      "maintainabilityIndex": 51.95039857250765,
       "longestClassLines": 0,
       "documentableExports": 1,
       "documentedExports": 1
     },
     {
-      "path": "src/app/composition-root.ts",
-      "logicalLinesOfCode": 96,
-      "physicalLines": 233,
-      "cyclomaticComplexity": 5,
-      "halsteadVolume": 2264.5809910562657,
-      "maintainabilityIndex": 55.73680515317906,
+      "path": "src/app/bindings.ts",
+      "logicalLinesOfCode": 87,
+      "physicalLines": 250,
+      "cyclomaticComplexity": 24,
+      "halsteadVolume": 2061.2733739234995,
+      "maintainabilityIndex": 53.45067656762984,
+      "longestClassLines": 0,
+      "documentableExports": 1,
+      "documentedExports": 1
+    },
+    {
+      "path": "src/presentation/render/space-scene.ts",
+      "logicalLinesOfCode": 105,
+      "physicalLines": 240,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 2658.8311464787776,
+      "maintainabilityIndex": 53.68050451720046,
       "longestClassLines": 0,
       "documentableExports": 3,
       "documentedExports": 3
+    },
+    {
+      "path": "src/domain/camera/camera-frame.ts",
+      "logicalLinesOfCode": 87,
+      "physicalLines": 295,
+      "cyclomaticComplexity": 10,
+      "halsteadVolume": 2619.2873336886705,
+      "maintainabilityIndex": 55.42486921929748,
+      "longestClassLines": 0,
+      "documentableExports": 13,
+      "documentedExports": 13
+    },
+    {
+      "path": "src/features/camera/rig-state.ts",
+      "logicalLinesOfCode": 85,
+      "physicalLines": 244,
+      "cyclomaticComplexity": 9,
+      "halsteadVolume": 2422.0903991356527,
+      "maintainabilityIndex": 56.4386411574158,
+      "longestClassLines": 0,
+      "documentableExports": 7,
+      "documentedExports": 7
     },
     {
       "path": "src/presentation/ui/boot-screen.ts",
@@ -244,15 +277,26 @@
       "documentedExports": 4
     },
     {
-      "path": "src/presentation/render/space-scene.ts",
-      "logicalLinesOfCode": 79,
-      "physicalLines": 203,
-      "cyclomaticComplexity": 8,
-      "halsteadVolume": 2096.024600045615,
-      "maintainabilityIndex": 58.60639632345203,
+      "path": "src/app/composition-root.ts",
+      "logicalLinesOfCode": 90,
+      "physicalLines": 194,
+      "cyclomaticComplexity": 5,
+      "halsteadVolume": 2127.8958362735384,
+      "maintainabilityIndex": 57.10606105990138,
       "longestClassLines": 0,
-      "documentableExports": 2,
-      "documentedExports": 2
+      "documentableExports": 3,
+      "documentedExports": 3
+    },
+    {
+      "path": "src/domain/body-facts.ts",
+      "logicalLinesOfCode": 69,
+      "physicalLines": 211,
+      "cyclomaticComplexity": 18,
+      "halsteadVolume": 2392.243530773085,
+      "maintainabilityIndex": 57.811542639381756,
+      "longestClassLines": 0,
+      "documentableExports": 8,
+      "documentedExports": 8
     },
     {
       "path": "src/features/engine/engine.ts",
@@ -288,6 +332,28 @@
       "documentedExports": 17
     },
     {
+      "path": "src/app/wiring.ts",
+      "logicalLinesOfCode": 68,
+      "physicalLines": 180,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 1637.9006065960161,
+      "maintainabilityIndex": 63.46788814538887,
+      "longestClassLines": 0,
+      "documentableExports": 6,
+      "documentedExports": 6
+    },
+    {
+      "path": "src/presentation/ui/body-list.ts",
+      "logicalLinesOfCode": 57,
+      "physicalLines": 139,
+      "cyclomaticComplexity": 11,
+      "halsteadVolume": 1593.0304240177338,
+      "maintainabilityIndex": 64.63092373794633,
+      "longestClassLines": 0,
+      "documentableExports": 3,
+      "documentedExports": 3
+    },
+    {
       "path": "src/domain/orbits/kepler.ts",
       "logicalLinesOfCode": 53,
       "physicalLines": 215,
@@ -308,6 +374,17 @@
       "longestClassLines": 0,
       "documentableExports": 12,
       "documentedExports": 12
+    },
+    {
+      "path": "src/presentation/ui/body-card.ts",
+      "logicalLinesOfCode": 56,
+      "physicalLines": 158,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 1594.5254855459339,
+      "maintainabilityIndex": 66.75277896748648,
+      "longestClassLines": 0,
+      "documentableExports": 5,
+      "documentedExports": 5
     },
     {
       "path": "src/features/space/propagate-system.ts",
@@ -376,15 +453,37 @@
       "documentedExports": 3
     },
     {
-      "path": "src/app/main.ts",
-      "logicalLinesOfCode": 46,
-      "physicalLines": 99,
-      "cyclomaticComplexity": 11,
-      "halsteadVolume": 820.6000251918275,
-      "maintainabilityIndex": 71.55382316119837,
+      "path": "src/domain/scale.ts",
+      "logicalLinesOfCode": 53,
+      "physicalLines": 183,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 1122,
+      "maintainabilityIndex": 69.4723569528259,
       "longestClassLines": 0,
-      "documentableExports": 0,
-      "documentedExports": 0
+      "documentableExports": 12,
+      "documentedExports": 12
+    },
+    {
+      "path": "src/presentation/ui/body-browser.ts",
+      "logicalLinesOfCode": 49,
+      "physicalLines": 126,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 1162.799410489516,
+      "maintainabilityIndex": 70.32786572971779,
+      "longestClassLines": 0,
+      "documentableExports": 2,
+      "documentedExports": 2
+    },
+    {
+      "path": "src/features/camera/camera-rig.ts",
+      "logicalLinesOfCode": 46,
+      "physicalLines": 164,
+      "cyclomaticComplexity": 2,
+      "halsteadVolume": 1182.9516222703785,
+      "maintainabilityIndex": 71.72201593789818,
+      "longestClassLines": 0,
+      "documentableExports": 3,
+      "documentedExports": 3
     },
     {
       "path": "src/shared/rng.ts",
@@ -431,6 +530,17 @@
       "documentedExports": 4
     },
     {
+      "path": "src/presentation/ui/time-hud.ts",
+      "logicalLinesOfCode": 40,
+      "physicalLines": 104,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 977.9922803030428,
+      "maintainabilityIndex": 74.74554360475868,
+      "longestClassLines": 0,
+      "documentableExports": 2,
+      "documentedExports": 2
+    },
+    {
       "path": "src/domain/time/julian.ts",
       "logicalLinesOfCode": 36,
       "physicalLines": 153,
@@ -442,26 +552,15 @@
       "documentedExports": 10
     },
     {
-      "path": "src/presentation/ui/time-hud.ts",
-      "logicalLinesOfCode": 36,
-      "physicalLines": 91,
-      "cyclomaticComplexity": 2,
-      "halsteadVolume": 770.6262394664012,
-      "maintainabilityIndex": 77.92153508900718,
-      "longestClassLines": 0,
-      "documentableExports": 2,
-      "documentedExports": 2
-    },
-    {
       "path": "src/domain/body.ts",
-      "logicalLinesOfCode": 35,
-      "physicalLines": 134,
+      "logicalLinesOfCode": 39,
+      "physicalLines": 163,
       "cyclomaticComplexity": 1,
-      "halsteadVolume": 712.5549647676364,
-      "maintainabilityIndex": 79.01530472982672,
+      "halsteadVolume": 818.8370440101221,
+      "maintainabilityIndex": 76.53929884081401,
       "longestClassLines": 0,
-      "documentableExports": 6,
-      "documentedExports": 6
+      "documentableExports": 7,
+      "documentedExports": 7
     },
     {
       "path": "src/domain/fixed-step.ts",
@@ -473,6 +572,17 @@
       "longestClassLines": 0,
       "documentableExports": 6,
       "documentedExports": 6
+    },
+    {
+      "path": "src/domain/camera/transition.ts",
+      "logicalLinesOfCode": 30,
+      "physicalLines": 123,
+      "cyclomaticComplexity": 5,
+      "halsteadVolume": 864.6653159937421,
+      "maintainabilityIndex": 79.58642134357879,
+      "longestClassLines": 0,
+      "documentableExports": 9,
+      "documentedExports": 9
     },
     {
       "path": "src/shared/statistics.ts",
@@ -508,6 +618,28 @@
       "documentedExports": 2
     },
     {
+      "path": "src/presentation/render/scale-controller.ts",
+      "logicalLinesOfCode": 28,
+      "physicalLines": 84,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 528.4471074323186,
+      "maintainabilityIndex": 83.72458479242236,
+      "longestClassLines": 0,
+      "documentableExports": 2,
+      "documentedExports": 2
+    },
+    {
+      "path": "src/presentation/render/render-target.ts",
+      "logicalLinesOfCode": 26,
+      "physicalLines": 94,
+      "cyclomaticComplexity": 5,
+      "halsteadVolume": 570.0294751672471,
+      "maintainabilityIndex": 84.07125811843287,
+      "longestClassLines": 0,
+      "documentableExports": 3,
+      "documentedExports": 3
+    },
+    {
       "path": "src/domain/session-seed.ts",
       "logicalLinesOfCode": 22,
       "physicalLines": 120,
@@ -539,6 +671,17 @@
       "longestClassLines": 0,
       "documentableExports": 5,
       "documentedExports": 5
+    },
+    {
+      "path": "src/domain/camera/camera-mode.ts",
+      "logicalLinesOfCode": 21,
+      "physicalLines": 109,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 514.324992443336,
+      "maintainabilityIndex": 88.29588870620748,
+      "longestClassLines": 0,
+      "documentableExports": 6,
+      "documentedExports": 6
     },
     {
       "path": "src/features/engine/ports.ts",
@@ -574,6 +717,17 @@
       "documentedExports": 2
     },
     {
+      "path": "src/app/main.ts",
+      "logicalLinesOfCode": 19,
+      "physicalLines": 35,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 299.13186826628436,
+      "maintainabilityIndex": 92.96548910029237,
+      "longestClassLines": 0,
+      "documentableExports": 0,
+      "documentedExports": 0
+    },
+    {
       "path": "src/presentation/render/browser-frame-loop.ts",
       "logicalLinesOfCode": 18,
       "physicalLines": 62,
@@ -605,6 +759,17 @@
       "longestClassLines": 0,
       "documentableExports": 2,
       "documentedExports": 2
+    },
+    {
+      "path": "src/domain/orbits/validity.ts",
+      "logicalLinesOfCode": 7,
+      "physicalLines": 48,
+      "cyclomaticComplexity": 2,
+      "halsteadVolume": 100,
+      "maintainabilityIndex": 115.06937061816583,
+      "longestClassLines": 0,
+      "documentableExports": 3,
+      "documentedExports": 3
     },
     {
       "path": "src/app/session-url.ts",

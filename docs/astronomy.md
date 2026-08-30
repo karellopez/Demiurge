@@ -96,8 +96,22 @@ The planetary elements are Standish's 1800–2050 fit. Outside that window the
 positions degrade smoothly rather than failing, but they are no longer covered by
 the accuracy claim above. This matters more than it sounds: at the top of the
 time-warp ladder a minute of play is sixty years, so a player leaves the fitted
-window in about twenty seconds. Extending it is a phase-3 concern, alongside the
-camera work that makes running that far worthwhile.
+window in about twenty seconds.
+
+Degrading smoothly is what makes it dangerous — nothing throws and nothing jumps,
+so the simulation goes on looking authoritative long after it has stopped being
+accurate. Since phase 3 the readout says so: the date turns amber, gains a `≈`,
+and carries a tooltip naming the window. `domain/orbits/validity.ts` is the one
+place the bounds are written down.
+
+The fit itself is **not** extended, and that is deliberate rather than deferred.
+Standish also publishes a 3000 BC – 3000 AD table, with four extra correction
+terms applied to the mean anomaly of Jupiter through Pluto. Adding it is a
+morning's work; _checking_ it is not, because every accuracy claim in this project
+is measured against real JPL Horizons state vectors and the committed fixtures
+span 1900–2050. A wider table with no fixtures outside the window it is supposed
+to fix would be an accuracy claim nobody had verified, which is the one thing this
+project does not do. Extending the fixtures comes first.
 
 ## Rotation and time
 

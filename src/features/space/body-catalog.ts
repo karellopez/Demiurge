@@ -178,6 +178,7 @@ export function buildCatalog(raw: RawCatalog): BodyCatalog {
 
   return {
     all,
+    inTreeOrder: treeOrder(root, children),
     root,
     byId: (id: string): Body | undefined => index.get(id),
     childrenOf: (id: string): readonly Body[] => children.get(id) ?? [],
@@ -195,4 +196,26 @@ export function buildCatalog(raw: RawCatalog): BodyCatalog {
       return chain;
     },
   };
+}
+
+/**
+ * Flattens the catalogue depth-first from the root.
+ *
+ * @param root - The body everything else orbits.
+ * @param children - Satellites, indexed by parent id.
+ * @returns Every reachable body, each one followed by its own satellites.
+ */
+function treeOrder(root: Body, children: ReadonlyMap<string, readonly Body[]>): readonly Body[] {
+  const ordered: Body[] = [];
+
+  const visit = (body: Body): void => {
+    ordered.push(body);
+    const satellites = children.get(body.id) ?? [];
+    for (const child of satellites) {
+      visit(child);
+    }
+  };
+
+  visit(root);
+  return ordered;
 }

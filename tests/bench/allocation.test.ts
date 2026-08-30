@@ -27,6 +27,14 @@ import { percentileOfSorted } from '@shared/statistics';
  * iterations a small per-frame object sits below the noise floor and the gate
  * passes when it should not. It was checked against a deliberately leaking loop.
  *
+ * The measurement is taken several times and the **minimum** is reported. The
+ * process does other things while the loop runs — the runner's own timers, the
+ * observer's entry buffer — and every one of them can only *add* heap between
+ * the two readings. Noise therefore has a floor of zero and no ceiling, so the
+ * smallest of several samples is the closest estimate of what the loop itself
+ * did, while a loop that genuinely allocates cannot produce a small sample at
+ * all. The self-test at the bottom is what keeps that claim honest.
+ *
  * One thing this gate taught us immediately, and which the frame loop has to
  * respect: accumulating a floating-point value into a variable captured by a
  * closure allocates. V8 keeps closure variables in a context object and boxes
@@ -41,6 +49,9 @@ const ITERATIONS = 200_000;
 /** Bytes of retained heap per iteration we are willing to call zero. */
 const ALLOWED_BYTES_PER_ITERATION = 2;
 
+/** Samples per measurement. The best one is reported; see the note above. */
+const SAMPLES = 5;
+
 /** Whether the runner was started with `--expose-gc`. */
 const canForceGc = typeof globalThis.gc === 'function';
 
@@ -53,17 +64,12 @@ interface AllocationMeasurement {
 }
 
 /**
- * Runs a hot path and reports whether it allocated.
+ * Takes one sample of a hot path.
  *
  * @param body - The hot path under test, called with the iteration index.
  * @returns Retained bytes per iteration, and the number of collections observed.
  */
-function measureAllocation(body: (index: number) => void): AllocationMeasurement {
-  // Warm up so JIT compilation and lazy allocation happen outside the window.
-  for (let index = 0; index < 10_000; index += 1) {
-    body(index);
-  }
-
+function sampleAllocation(body: (index: number) => void): AllocationMeasurement {
   let collections = 0;
   const observer = new PerformanceObserver((list) => {
     collections += list.getEntries().length;
@@ -85,6 +91,29 @@ function measureAllocation(body: (index: number) => void): AllocationMeasurement
     bytesPerIteration: Math.max(0, after - before) / ITERATIONS,
     collections: Math.max(0, collections - 1),
   };
+}
+
+/**
+ * Runs a hot path several times and reports its best sample.
+ *
+ * @param body - The hot path under test, called with the iteration index.
+ * @returns The smallest retention and collection count observed.
+ */
+function measureAllocation(body: (index: number) => void): AllocationMeasurement {
+  // Warm up so JIT compilation and lazy allocation happen outside the window.
+  for (let index = 0; index < 10_000; index += 1) {
+    body(index);
+  }
+
+  let bytesPerIteration = Infinity;
+  let collections = Infinity;
+  for (let sample = 0; sample < SAMPLES; sample += 1) {
+    const measured = sampleAllocation(body);
+    bytesPerIteration = Math.min(bytesPerIteration, measured.bytesPerIteration);
+    collections = Math.min(collections, measured.collections);
+  }
+
+  return { bytesPerIteration, collections };
 }
 
 describe.skipIf(!canForceGc)('the per-frame hot paths allocate nothing', () => {

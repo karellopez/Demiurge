@@ -209,7 +209,21 @@ export default tseslint.config(
       'src/shared/math/**/*.ts',
       'src/domain/floating-origin.ts',
       'src/features/engine/engine.ts',
+      'src/features/camera/rig-state.ts',
+      'src/app/bindings.ts',
+      'src/presentation/render/space-scene.ts',
     ],
+    rules: {
+      'no-param-reassign': ['error', { props: false }],
+    },
+  },
+
+  // three.js configures a camera by assignment: `camera.aspect = ...` followed
+  // by `updateProjectionMatrix()` is the documented way, and there is no
+  // functional form of it. The adapters that own that call are listed here, and
+  // nothing else in the render layer is exempt.
+  {
+    files: ['src/presentation/render/render-target.ts'],
     rules: {
       'no-param-reassign': ['error', { props: false }],
     },

@@ -11,6 +11,75 @@ Version tags begin at phase 5; before that the project is pre-release and the
 
 ### Added
 
+- **Phase 3 — cameras, selection and scale.**
+  - One camera rig with five modes, cycled with `C`: Orbit, Locked frame,
+    Inertial, Sun-relative and Cinematic. Each holds a different thing still,
+    which is the whole difference between them. Sun-relative is withheld when the
+    Sun itself is followed — a star has no terminator — and the cycle skips it
+    rather than offering a mode that does nothing.
+  - **Nothing clips.** Orbit distance is measured in body radii rather than
+    metres, because that is the only unit under which one number means the same
+    thing at Phobos and at Jupiter. Zoom is exponential and clamped at 1.05
+    radii; a test walks all twenty-five bodies at every zoom extreme and at every
+    scale preset and asserts the camera stays outside the surface.
+  - **Nothing snaps.** Selecting a body starts a timed transition — 0.8 s nearby,
+    2 s across the system, log-scaled in radii, smoothstep-eased so it cannot
+    overshoot. Selecting again mid-transition re-aims from where the camera
+    actually is, so rapid clicking is a continuous path rather than a sequence of
+    teleports. Tested as a discontinuity check on the per-frame step, not as a
+    screenshot.
+  - The up vector swings into the view plane within 2.6° of ecliptic north, so
+    dragging over a pole does not snap the roll through a right angle.
+  - **Body browser**: a quick bar for the Sun and the eight planets, a search box,
+    and the full catalogue indented by what orbits what. Filtering keeps a
+    match's ancestors, so a moon is never left orphaned under nothing. `B`
+    toggles it; `[` and `]` walk the same order the list shows.
+  - `BodyCatalog.inTreeOrder` — the catalogue flattened depth-first — so the list
+    and the bracket keys cannot disagree about what "next" means. File order is
+    not tree order, and a test asserts that they differ.
+  - **Live stats card**: distance from camera and from the Sun, radius, mass,
+    surface gravity against Earth's, rotation and orbital period. Mass is derived
+    from the catalogued GM rather than stored, since GM is the measured quantity.
+    Retrograde rotation is spelled out in words. Local solar time waits for the
+    IAU rotation model in phase 4.
+  - **Scale presets** on `1`, `2` and `3` — True scale, Orrery, Textbook —
+    animating over 1.5 s, geometrically rather than linearly. Scale is a
+    rendering transform and never a simulation one: it is applied once at the
+    floating-origin boundary, so orbits, gravity and collision never see it.
+  - Mouse drag orbits the camera and the wheel zooms, both restricted to the
+    canvas so a click in the list stays a selection.
+  - **The date says when it has left the fitted window.** The planetary elements
+    are Standish's 1800–2050 fit, and at a year a second a player clears it in
+    about twenty seconds — after which the positions degrade smoothly rather than
+    failing, which is exactly what makes it dangerous. The readout now turns
+    amber, gains a `≈` and carries a tooltip naming the window.
+    `domain/orbits/validity.ts` is the one place those bounds are written down.
+    The fit itself is deliberately not widened: see `docs/astronomy.md` for why
+    an unverified wider table is worse than a narrow verified one.
+
+### Changed
+
+- The body browser moved from `J` to `B`, leaving `J` for the discovery journal
+  the brief assigns it in phase 8.
+- `camera-frame.ts` no longer carries a degenerate-cross-product fallback in
+  `writeUp`: the branch is only reached within 2.6° of the z axis, where +x can
+  never be parallel to the view, so the fallback was unreachable.
+- The allocation gate now takes five samples and reports the smallest. Background
+  heap growth during the measured loop can only ever add, so the minimum is the
+  closest estimate of what the loop itself did — and a loop that genuinely
+  allocates cannot produce a small sample at all. The single-sample version was
+  flaky at the 2-bytes-per-iteration threshold.
+- The mutation suite now runs the camera-rig and body-facts integration tests as
+  well. Both are pure, and without them every camera-transition mutant survived.
+
+### Removed
+
+- `scene-capture.png`, an ad-hoc render capture taken while debugging the
+  edge-on solar system in phase 2 and committed by accident. Nothing referenced
+  it and it changed on every run; the pattern is now in `.gitignore`.
+
+### Added
+
 - **Phase 2 — the solar system.**
   - `data/bodies.json`: twenty-five bodies — the Sun, eight planets, Pluto,
     Ceres, Eris and thirteen moons — with radii, GM, rotation, pole and prime

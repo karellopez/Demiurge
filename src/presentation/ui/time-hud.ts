@@ -10,9 +10,14 @@
  * itself once the simulation is up. A universe you cannot name is a universe you
  * cannot share or report a bug against, so its identity stays on screen.
  *
+ * The date also carries a warning once it leaves the window the orbital element
+ * fit covers. Twenty seconds at the top of the time-warp ladder is enough to get
+ * there, and the positions go on looking authoritative the whole way.
+ *
  * @module
  */
 
+import { FIT_FIRST_YEAR, FIT_LAST_YEAR, isWithinFittedWindow } from '@domain/orbits/validity';
 import { formatSimTime } from '@domain/time/julian';
 import { labelFor, type TimeScaleState } from '@domain/time-scale';
 import type { FrameStats, StatsSink } from '@features/engine/ports';
@@ -72,6 +77,14 @@ export function mountTimeHud(host: HTMLElement, seedPhrase: string, nowMs: () =>
       }
       lastRefreshMs = now;
       dateCell.textContent = formatSimTime(stats.simTimeSeconds);
+
+      // Outside the fit the positions degrade smoothly rather than failing, so
+      // nothing else on screen would ever say so.
+      const isFitted = isWithinFittedWindow(stats.simTimeSeconds);
+      dateCell.classList.toggle('time-hud__date--unfitted', !isFitted);
+      dateCell.title = isFitted
+        ? ''
+        : `Outside the ${String(FIT_FIRST_YEAR)}–${String(FIT_LAST_YEAR)} element fit; positions are approximate.`;
     },
 
     setTimeScale(state: TimeScaleState): void {
