@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-30T18:53:28.809Z",
+  "generatedAt": "2026-08-30T19:19:39.376Z",
   "gates": [
     {
       "id": "typecheck",
@@ -21,11 +21,11 @@
       "id": "coverage-lines",
       "name": "Coverage - lines, overall",
       "tool": "vitest v8",
-      "value": "88.54%",
+      "value": "89.07%",
       "threshold": ">= 80.00%",
       "status": "pass",
       "numeric": {
-        "measured": 88.53681267474371,
+        "measured": 89.0652557319224,
         "threshold": 80,
         "direction": "min"
       }
@@ -34,11 +34,11 @@
       "id": "coverage-branches",
       "name": "Coverage - branches, overall",
       "tool": "vitest v8",
-      "value": "81.45%",
+      "value": "81.87%",
       "threshold": ">= 75.00%",
       "status": "pass",
       "numeric": {
-        "measured": 81.44927536231884,
+        "measured": 81.86968838526913,
         "threshold": 75,
         "direction": "min"
       }
@@ -47,11 +47,11 @@
       "id": "coverage-lines-core",
       "name": "Coverage - lines, shared+domain",
       "tool": "vitest v8",
-      "value": "99.77%",
+      "value": "99.80%",
       "threshold": ">= 98.00%",
       "status": "pass",
       "numeric": {
-        "measured": 99.77116704805492,
+        "measured": 99.79879275653923,
         "threshold": 98,
         "direction": "min"
       }
@@ -60,11 +60,11 @@
       "id": "coverage-branches-core",
       "name": "Coverage - branches, shared+domain",
       "tool": "vitest v8",
-      "value": "98.60%",
+      "value": "98.68%",
       "threshold": ">= 98.00%",
       "status": "pass",
       "numeric": {
-        "measured": 98.6013986013986,
+        "measured": 98.67549668874173,
         "threshold": 98,
         "direction": "min"
       }
@@ -73,11 +73,11 @@
       "id": "mutation",
       "name": "Mutation score - shared + domain",
       "tool": "stryker",
-      "value": "98.67%",
+      "value": "98.71%",
       "threshold": ">= 98.00%",
       "status": "pass",
       "numeric": {
-        "measured": 98.6737400530504,
+        "measured": 98.70892018779342,
         "threshold": 98,
         "direction": "min"
       }
@@ -86,12 +86,12 @@
       "id": "maintainability",
       "name": "Maintainability index (worst file)",
       "tool": "scripts/qa (TypeScript AST)",
-      "value": "51.95",
+      "value": "51.81",
       "threshold": ">= 50.00",
       "status": "pass",
-      "detail": "worst: src/features/space/body-catalog.ts",
+      "detail": "worst: src/presentation/render/space-scene.ts",
       "numeric": {
-        "measured": 51.95039857250765,
+        "measured": 51.805422250711146,
         "threshold": 50,
         "direction": "min"
       }
@@ -169,7 +169,7 @@
       "value": "clean",
       "threshold": "within .size-limit.json",
       "status": "pass",
-      "detail": "initial JS (every chunk needed for the first frame, gzip): 143.4 kB of 293 kB\ntotal payload (JS + CSS, gzip, excludes fetched imagery): 144.9 kB of 1465 kB"
+      "detail": "initial JS (every chunk needed for the first frame, gzip): 144.1 kB of 293 kB\ntotal payload (JS + CSS, gzip, excludes fetched imagery): 145.6 kB of 1465 kB"
     },
     {
       "id": "vulnerabilities",
@@ -211,6 +211,17 @@
   },
   "files": [
     {
+      "path": "src/presentation/render/space-scene.ts",
+      "logicalLinesOfCode": 114,
+      "physicalLines": 261,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 2951.389407640465,
+      "maintainabilityIndex": 51.805422250711146,
+      "longestClassLines": 0,
+      "documentableExports": 3,
+      "documentedExports": 3
+    },
+    {
       "path": "src/features/space/body-catalog.ts",
       "logicalLinesOfCode": 97,
       "physicalLines": 222,
@@ -231,17 +242,6 @@
       "longestClassLines": 0,
       "documentableExports": 1,
       "documentedExports": 1
-    },
-    {
-      "path": "src/presentation/render/space-scene.ts",
-      "logicalLinesOfCode": 105,
-      "physicalLines": 240,
-      "cyclomaticComplexity": 4,
-      "halsteadVolume": 2658.8311464787776,
-      "maintainabilityIndex": 53.68050451720046,
-      "longestClassLines": 0,
-      "documentableExports": 3,
-      "documentedExports": 3
     },
     {
       "path": "src/domain/camera/camera-frame.ts",
@@ -288,17 +288,6 @@
       "documentedExports": 3
     },
     {
-      "path": "src/domain/body-facts.ts",
-      "logicalLinesOfCode": 69,
-      "physicalLines": 211,
-      "cyclomaticComplexity": 18,
-      "halsteadVolume": 2392.243530773085,
-      "maintainabilityIndex": 57.811542639381756,
-      "longestClassLines": 0,
-      "documentableExports": 8,
-      "documentedExports": 8
-    },
-    {
       "path": "src/features/engine/engine.ts",
       "logicalLinesOfCode": 83,
       "physicalLines": 174,
@@ -321,6 +310,17 @@
       "documentedExports": 2
     },
     {
+      "path": "src/app/wiring.ts",
+      "logicalLinesOfCode": 76,
+      "physicalLines": 188,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 1923.6541559629163,
+      "maintainabilityIndex": 60.82981420262047,
+      "longestClassLines": 0,
+      "documentableExports": 6,
+      "documentedExports": 6
+    },
+    {
       "path": "src/shared/math/vec3.ts",
       "logicalLinesOfCode": 62,
       "physicalLines": 256,
@@ -332,15 +332,15 @@
       "documentedExports": 17
     },
     {
-      "path": "src/app/wiring.ts",
-      "logicalLinesOfCode": 68,
-      "physicalLines": 180,
-      "cyclomaticComplexity": 3,
-      "halsteadVolume": 1637.9006065960161,
-      "maintainabilityIndex": 63.46788814538887,
+      "path": "src/domain/rotation.ts",
+      "logicalLinesOfCode": 59,
+      "physicalLines": 241,
+      "cyclomaticComplexity": 2,
+      "halsteadVolume": 2191.9168172351565,
+      "maintainabilityIndex": 64.48272857389497,
       "longestClassLines": 0,
-      "documentableExports": 6,
-      "documentedExports": 6
+      "documentableExports": 10,
+      "documentedExports": 10
     },
     {
       "path": "src/presentation/ui/body-list.ts",
@@ -352,6 +352,39 @@
       "longestClassLines": 0,
       "documentableExports": 3,
       "documentedExports": 3
+    },
+    {
+      "path": "src/presentation/render/solar-system-scene.ts",
+      "logicalLinesOfCode": 61,
+      "physicalLines": 193,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 1632.0100944248127,
+      "maintainabilityIndex": 65.24649125215828,
+      "longestClassLines": 0,
+      "documentableExports": 6,
+      "documentedExports": 6
+    },
+    {
+      "path": "src/domain/body-format.ts",
+      "logicalLinesOfCode": 48,
+      "physicalLines": 156,
+      "cyclomaticComplexity": 18,
+      "halsteadVolume": 1755.576816021776,
+      "maintainabilityIndex": 65.29966931290437,
+      "longestClassLines": 0,
+      "documentableExports": 6,
+      "documentedExports": 6
+    },
+    {
+      "path": "src/domain/orbits/propagate.ts",
+      "logicalLinesOfCode": 52,
+      "physicalLines": 205,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 2275.665002509239,
+      "maintainabilityIndex": 66.10370825215546,
+      "longestClassLines": 0,
+      "documentableExports": 6,
+      "documentedExports": 6
     },
     {
       "path": "src/domain/orbits/kepler.ts",
@@ -376,17 +409,6 @@
       "documentedExports": 12
     },
     {
-      "path": "src/presentation/ui/body-card.ts",
-      "logicalLinesOfCode": 56,
-      "physicalLines": 158,
-      "cyclomaticComplexity": 3,
-      "halsteadVolume": 1594.5254855459339,
-      "maintainabilityIndex": 66.75277896748648,
-      "longestClassLines": 0,
-      "documentableExports": 5,
-      "documentedExports": 5
-    },
-    {
       "path": "src/features/space/propagate-system.ts",
       "logicalLinesOfCode": 47,
       "physicalLines": 134,
@@ -409,17 +431,6 @@
       "documentedExports": 1
     },
     {
-      "path": "src/domain/orbits/propagate.ts",
-      "logicalLinesOfCode": 49,
-      "physicalLines": 183,
-      "cyclomaticComplexity": 3,
-      "halsteadVolume": 2078.262854619097,
-      "maintainabilityIndex": 67.53821535056065,
-      "longestClassLines": 0,
-      "documentableExports": 5,
-      "documentedExports": 5
-    },
-    {
       "path": "src/shared/units.ts",
       "logicalLinesOfCode": 57,
       "physicalLines": 279,
@@ -440,6 +451,17 @@
       "longestClassLines": 0,
       "documentableExports": 8,
       "documentedExports": 8
+    },
+    {
+      "path": "src/presentation/ui/body-card.ts",
+      "logicalLinesOfCode": 53,
+      "physicalLines": 150,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 1511.493309378151,
+      "maintainabilityIndex": 67.92283338425192,
+      "longestClassLines": 0,
+      "documentableExports": 5,
+      "documentedExports": 5
     },
     {
       "path": "src/presentation/render/body-appearance.ts",
@@ -475,6 +497,17 @@
       "documentedExports": 2
     },
     {
+      "path": "src/domain/body-facts.ts",
+      "logicalLinesOfCode": 48,
+      "physicalLines": 138,
+      "cyclomaticComplexity": 4,
+      "halsteadVolume": 1235.6812197601612,
+      "maintainabilityIndex": 70.34577962521976,
+      "longestClassLines": 0,
+      "documentableExports": 4,
+      "documentedExports": 4
+    },
+    {
       "path": "src/features/camera/camera-rig.ts",
       "logicalLinesOfCode": 46,
       "physicalLines": 164,
@@ -495,17 +528,6 @@
       "longestClassLines": 0,
       "documentableExports": 5,
       "documentedExports": 5
-    },
-    {
-      "path": "src/presentation/render/solar-system-scene.ts",
-      "logicalLinesOfCode": 46,
-      "physicalLines": 149,
-      "cyclomaticComplexity": 3,
-      "halsteadVolume": 1108.1156775972356,
-      "maintainabilityIndex": 71.83184480396604,
-      "longestClassLines": 0,
-      "documentableExports": 4,
-      "documentedExports": 4
     },
     {
       "path": "src/presentation/render/webgl-host-capabilities.ts",
@@ -726,6 +748,17 @@
       "longestClassLines": 0,
       "documentableExports": 0,
       "documentedExports": 0
+    },
+    {
+      "path": "src/domain/frames.ts",
+      "logicalLinesOfCode": 14,
+      "physicalLines": 93,
+      "cyclomaticComplexity": 1,
+      "halsteadVolume": 525.1448089010088,
+      "maintainabilityIndex": 95.44616619484248,
+      "longestClassLines": 0,
+      "documentableExports": 4,
+      "documentedExports": 4
     },
     {
       "path": "src/presentation/render/browser-frame-loop.ts",

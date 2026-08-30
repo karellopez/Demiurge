@@ -11,6 +11,43 @@ Version tags begin at phase 5; before that the project is pre-release and the
 
 ### Added
 
+- **Phase 4 (in progress) — body orientation.**
+  - The IAU WGCCRE rotation model: a fixed pole and a prime meridian angle
+    `W = W₀ + Ẇ·d`, giving every body a full body-fixed basis in ecliptic
+    coordinates. Bodies are now oriented in the scene, so a pole points where it
+    actually points and an oblate body is squashed along its own axis rather
+    than along the world's.
+  - `domain/frames.ts` — the one place the equatorial frame the IAU publishes
+    poles in meets the ecliptic frame everything else lives in. Skipping that
+    conversion tilts the whole system by 23.44°, which looks almost right.
+  - Sub-solar point, terminator geometry and **local solar time**, which joins
+    the stats card. Noon is where the star is overhead, and the sub-camera point
+    is the place the card reports for.
+  - `orbitNormal` on the propagator, and an `axialTilt` that measures against a
+    body's own orbit and in its own direction of spin — the two things that make
+    a computed tilt match a published one.
+
+### Fixed
+
+- **Mars's pole declination in the catalogue was wrong**: 54.432516° where the
+  IAU 2015 report gives 52.8865°, with the right ascension out by 0.4° as well.
+  It put Mars's axial tilt at 23.92° instead of 25.19°. Found by the new
+  almanac tests on the first run. The corrected pole also sits 0.014° from
+  Phobos's, which is where a Mars pole has to be — Phobos orbits in Mars's
+  equatorial plane.
+- The stats-card refresher built a fresh update object every frame. It now
+  writes one it owns in place, which is what the zero-allocation rule asks for.
+
+### Changed
+
+- `computeBodyFacts` takes a record rather than five positional arguments, and
+  the display formatting moved to `domain/body-format.ts`. The two change for
+  different reasons: a number changes when the physics does, its wording when
+  someone cannot read it.
+- The mutation suite runs the rotation integration tests too.
+
+### Added
+
 - **Phase 3 — cameras, selection and scale.**
   - One camera rig with five modes, cycled with `C`: Orbit, Locked frame,
     Inertial, Sun-relative and Cinematic. Each holds a different thing still,

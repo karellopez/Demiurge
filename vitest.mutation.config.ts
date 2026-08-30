@@ -41,6 +41,7 @@ export default defineConfig({
       'tests/integration/body-catalog.test.ts',
       'tests/integration/body-facts.test.ts',
       'tests/integration/camera-rig.test.ts',
+      'tests/integration/rotation.test.ts',
     ],
     environment: 'node',
   },

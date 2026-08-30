@@ -115,9 +115,36 @@ project does not do. Extending the fixtures comes first.
 
 ## Rotation and time
 
-Rotation uses real axes, rates and prime-meridian phase, so the terminator on
-Earth is correct for the displayed UTC date, and sunrise on Mars is the sunrise
-the simulation says it is at that timestamp.
+Rotation uses the IAU WGCCRE model the catalogue stores: a fixed pole
+(α₀, δ₀) and a prime meridian angle `W = W₀ + Ẇ·d`. `Ẇ` is negative for a
+retrograde rotator, which is what makes Venus turn the way Venus turns. So the
+terminator on Earth is correct for the displayed UTC date, and sunrise on Mars
+is the sunrise the simulation says it is at that timestamp.
+
+Poles are published in the **equatorial** (ICRF) frame and everything else in
+this project lives in the **ecliptic** one. `domain/frames.ts` is the single
+place the two cross over. Forgetting that conversion tilts every body in the
+system by 23.44° — which looks almost right, and is exactly the kind of almost
+that puts a terminator in the wrong place.
+
+### Axial tilts, and how they are checked
+
+The test suite checks six axial tilts against the figures an almanac publishes,
+and getting them to agree needs two things that are easy to get wrong:
+
+- Tilt is measured against the body's **own orbit normal**, not ecliptic north.
+  Every planet's orbit is inclined by a degree or two — small enough to look
+  right, large enough to be wrong.
+- It is measured to the axis taken in the **direction of rotation**. The IAU
+  picks "north" by which side of the invariable plane it falls on, so for a
+  retrograde body the two are opposite ends of the same line. That is why Venus
+  is quoted at 177° rather than 3°, and Uranus at 98° rather than 82°.
+
+Those tests earned their keep immediately: they caught a wrong pole declination
+for Mars in the catalogue (54.43° where the IAU 2015 report gives 52.8865°),
+which put its tilt at 23.92° instead of 25.19°. The corrected value also lands
+0.014° from Phobos's pole, which is where a Mars pole has to be, since Phobos
+orbits in Mars's equatorial plane.
 
 Time is explicit: `simTimeSeconds` is an f64 count of seconds since J2000.
 Nothing else in the project reads a clock — a `Clock` port is injected, which is

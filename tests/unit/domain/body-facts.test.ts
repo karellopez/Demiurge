@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import { mass, type Body } from '@domain/body';
+import { orbitalPeriodDays } from '@domain/body-facts';
 import {
   formatDistance,
+  formatLocalTime,
   formatMass,
   formatPeriod,
   formatRadius,
   formatSurfaceGravity,
-  orbitalPeriodDays,
-} from '@domain/body-facts';
+} from '@domain/body-format';
 import type { OrbitalElements } from '@domain/orbits/elements';
 import { METERS_PER_AU, astronomicalUnits, days, meters, radians } from '@shared/units';
 import type { GravitationalParameter } from '@shared/units';
@@ -202,5 +203,31 @@ describe('mass derived from GM', () => {
         gravitationalParameter: 398_600.4355 as GravitationalParameter,
       }),
     ).toBeCloseTo(5.972e24, -21);
+  });
+});
+
+describe('local solar time', () => {
+  it('reads as a clock does', () => {
+    expect(formatLocalTime(0)).toBe('00:00');
+    expect(formatLocalTime(12)).toBe('12:00');
+    expect(formatLocalTime(13.5)).toBe('13:30');
+    expect(formatLocalTime(23.99)).toBe('23:59');
+  });
+
+  it('wraps rather than showing an impossible hour', () => {
+    expect(formatLocalTime(24)).toBe('00:00');
+    expect(formatLocalTime(-1)).toBe('23:00');
+  });
+
+  it('shows a dash where local time has no meaning, as on a star', () => {
+    expect(formatLocalTime(undefined)).toBe('—');
+    expect(formatLocalTime(NaN)).toBe('—');
+  });
+});
+
+describe('a mass with no exponent to speak of', () => {
+  it('writes a bare zero exponent rather than a negative one', () => {
+    expect(formatMass(5)).toBe('5.00 × 10⁰ kg');
+    expect(formatMass(1)).toBe('1.00 × 10⁰ kg');
   });
 });

@@ -22,6 +22,7 @@ import type { PerspectiveCamera, WebGLRenderer } from 'three';
 import type { BodyCatalog } from '@domain/body';
 import { createCameraFrame } from '@domain/camera/camera-frame';
 import { toRenderSpaceFloat32 } from '@domain/floating-origin';
+import { bodyFrameAt, createBodyFrame, type BodyFrame } from '@domain/rotation';
 import type { ScaleSettings } from '@domain/scale';
 import type { BodyPositions, CameraRig } from '@features/camera/camera-rig';
 import type { SceneRenderer } from '@features/engine/ports';
@@ -31,7 +32,12 @@ import { seconds, type Seconds } from '@shared/units';
 
 import { createRenderer, createSceneCamera, resizeToCanvas } from './render-target';
 import { createScaleController } from './scale-controller';
-import type { createSolarSystemVisuals, placeVisual } from './solar-system-scene';
+import {
+  createVisualOrienter,
+  type createSolarSystemVisuals,
+  type placeVisual,
+  type VisualOrienter,
+} from './solar-system-scene';
 
 /** What the space scene needs to be built. */
 export interface SpaceSceneOptions {
@@ -90,6 +96,10 @@ interface RenderContext {
   readonly cameraFrame: ReturnType<typeof createCameraFrame>;
   readonly scaleController: ReturnType<typeof createScaleController>;
   readonly renderPosition: Vec3;
+  readonly orienter: VisualOrienter;
+  readonly bodyFrame: BodyFrame;
+  /** The moment the last `step` advanced the system to. */
+  simTimeSeconds: Seconds;
   /**
    * Computes a body's scaled offset from the camera.
    *
@@ -120,6 +130,13 @@ function renderFrame(context: RenderContext): void {
 
   for (const visual of visuals.visuals) {
     place(visual, context.offsetFor(visual.body.id));
+    // The pole and the prime meridian, from the IAU model. Without this a body
+    // is a sphere turning at the right speed with an arbitrary phase, and every
+    // terminator and every oblate silhouette is wrong.
+    context.orienter.orient(
+      visual,
+      bodyFrameAt(context.bodyFrame, visual.body, context.simTimeSeconds),
+    );
 
     // Orbit lines are drawn in the parent's frame, so they follow the parent
     // rather than the body, and shrink with the distance scale.
@@ -164,6 +181,9 @@ function createRenderContext(
     cameraFrame,
     scaleController,
     renderPosition,
+    orienter: createVisualOrienter(),
+    bodyFrame: createBodyFrame(),
+    simTimeSeconds: seconds(0),
     offsetFor(bodyId: string): Vec3 {
       system.readPosition(bodyId, bodyWorldPosition);
       toRenderSpaceFloat32(renderPosition, bodyWorldPosition, cameraFrame.position);
@@ -197,6 +217,7 @@ export function createSpaceScene(options: SpaceSceneOptions): SpaceScene {
 
     step(simTimeSeconds: Seconds): void {
       system.update(simTimeSeconds);
+      context.simTimeSeconds = simTimeSeconds;
     },
 
     render(): void {

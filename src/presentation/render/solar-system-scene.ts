@@ -17,8 +17,10 @@
  */
 
 import {
+  Matrix4,
   PointLight,
   Scene,
+  Vector3,
   type Line,
   type LineBasicMaterial,
   type Mesh,
@@ -27,6 +29,7 @@ import {
 } from 'three';
 
 import type { BodyCatalog, Body } from '@domain/body';
+import type { BodyFrame } from '@domain/rotation';
 import type { Vec3 } from '@shared/math/vec3';
 
 import { createBodyMesh, createGlare } from './body-appearance';
@@ -145,4 +148,45 @@ export function createSolarSystemVisuals(
 export function placeVisual(visual: BodyVisual, renderPosition: Vec3): void {
   visual.mesh.position.set(renderPosition.x, renderPosition.y, renderPosition.z);
   visual.glare.position.set(renderPosition.x, renderPosition.y, renderPosition.z);
+}
+
+/** Turns a body's IAU frame into a three.js orientation, without allocating. */
+export interface VisualOrienter {
+  /**
+   * Points a body's mesh the way the IAU model says it is pointing.
+   *
+   * @param visual - The body's handles.
+   * @param frame - The body's orientation now, in ecliptic coordinates.
+   */
+  orient(visual: BodyVisual, frame: BodyFrame): void;
+}
+
+/**
+ * Creates an orienter.
+ *
+ * The mapping is fixed by three.js: a `SphereGeometry` has its poles on local
+ * +Y and its seam on local +X, so local +Y carries the body's pole and local +X
+ * its prime meridian. The third column follows from the first two — for a
+ * right-handed basis it is `primeMeridian × pole`, which is `−east` — and
+ * getting it wrong mirrors every body, which is invisible on a sphere of noise
+ * and glaring the moment a real texture lands on it.
+ *
+ * @returns An orienter with its own scratch.
+ */
+export function createVisualOrienter(): VisualOrienter {
+  // PERF: mutable for zero-alloc — rewritten for every body, every frame.
+  const basis = new Matrix4();
+  const localX = new Vector3();
+  const localY = new Vector3();
+  const localZ = new Vector3();
+
+  return {
+    orient(visual: BodyVisual, frame: BodyFrame): void {
+      localX.set(frame.primeMeridian.x, frame.primeMeridian.y, frame.primeMeridian.z);
+      localY.set(frame.pole.x, frame.pole.y, frame.pole.z);
+      localZ.set(-frame.east.x, -frame.east.y, -frame.east.z);
+      basis.makeBasis(localX, localY, localZ);
+      visual.mesh.quaternion.setFromRotationMatrix(basis);
+    },
+  };
 }

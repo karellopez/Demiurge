@@ -19,6 +19,7 @@ import { createAnimationFrameScheduler } from '@presentation/render/browser-fram
 import { createSolarSystemVisuals, placeVisual } from '@presentation/render/solar-system-scene';
 import { createSpaceScene, type SpaceScene } from '@presentation/render/space-scene';
 import type { BodyBrowser } from '@presentation/ui/body-browser';
+import type { CardUpdate } from '@presentation/ui/body-card';
 import {
   combineDiagnosticsSinks,
   createConsoleDiagnosticsSink,
@@ -27,9 +28,13 @@ import {
 import { mountStatsOverlay, type StatsOverlay } from '@presentation/ui/stats-overlay';
 import { mountTimeHud, type TimeHud } from '@presentation/ui/time-hud';
 import { createVec3 } from '@shared/math/vec3';
+import { seconds } from '@shared/units';
 
 /** Which body a session opens on. Close enough to see, familiar enough to orient. */
 export const INITIAL_BODY_ID = 'earth';
+
+/** Strips `readonly` so a record meant to be reused can be written in place. */
+type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 /**
  * Fans one frame's statistics out to several sinks.
@@ -129,31 +134,34 @@ export function createCardRefresher(
   scene: SpaceScene,
   catalog: BodyCatalog,
 ): StatsSink {
-  // PERF: mutable for zero-alloc — the card runs on the frame path.
-  const bodyPosition = createVec3();
-  const starPosition = createVec3();
-  const cameraPosition = createVec3();
+  // PERF: mutable for zero-alloc — this runs on the frame path, so the update
+  // record is written in place rather than built fresh sixty times a second.
+  const update: Mutable<CardUpdate> = {
+    body: catalog.root,
+    mode: scene.rig.state().mode,
+    bodyPosition: createVec3(),
+    starPosition: createVec3(),
+    cameraPosition: createVec3(),
+    simTimeSeconds: seconds(0),
+  };
   let lastBodyId = '';
 
   return {
-    publish(): void {
+    publish(stats: FrameStats): void {
       const state = scene.rig.state();
       if (state.body.id !== lastBodyId) {
         lastBodyId = state.body.id;
         browser.markSelected(state.body.id);
       }
 
-      scene.positions.readPosition(state.body.id, bodyPosition);
-      scene.positions.readPosition(catalog.root.id, starPosition);
-      scene.readCameraPosition(cameraPosition);
+      scene.positions.readPosition(state.body.id, update.bodyPosition);
+      scene.positions.readPosition(catalog.root.id, update.starPosition);
+      scene.readCameraPosition(update.cameraPosition);
 
-      browser.refresh({
-        body: state.body,
-        mode: state.mode,
-        bodyPosition,
-        starPosition,
-        cameraPosition,
-      });
+      update.body = state.body;
+      update.mode = state.mode;
+      update.simTimeSeconds = stats.simTimeSeconds;
+      browser.refresh(update);
     },
   };
 }

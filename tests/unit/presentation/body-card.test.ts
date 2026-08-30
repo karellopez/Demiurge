@@ -4,7 +4,7 @@ import type { Body } from '@domain/body';
 import { CameraMode } from '@domain/camera/camera-mode';
 import { cardText } from '@presentation/ui/body-card';
 import { createVec3, type Vec3 } from '@shared/math/vec3';
-import { days, meters, radians, type GravitationalParameter } from '@shared/units';
+import { days, meters, radians, seconds, type GravitationalParameter } from '@shared/units';
 
 /** One astronomical unit, in metres. */
 const AU = 1.495978707e11;
@@ -58,6 +58,7 @@ describe('the card text', () => {
       bodyPosition: at(0),
       starPosition: at(0),
       cameraPosition: at(0),
+      simTimeSeconds: seconds(0),
     });
     expect(text.mode).toBe('Sun-relative');
   });
@@ -69,6 +70,7 @@ describe('the card text', () => {
       bodyPosition: at(AU),
       starPosition: at(0),
       cameraPosition: at(AU + 1e7),
+      simTimeSeconds: seconds(0),
     });
     expect(text['distance-star']).toBe('1.000 au');
     expect(text['distance-camera']).toBe('10,000 km');
@@ -81,6 +83,7 @@ describe('the card text', () => {
       bodyPosition: at(0),
       starPosition: at(0),
       cameraPosition: at(0),
+      simTimeSeconds: seconds(0),
     });
     expect(text.gravity).toContain('1.00g');
     expect(text.rotation).toBe('23.93 hours');
@@ -93,6 +96,7 @@ describe('the card text', () => {
       bodyPosition: at(0),
       starPosition: at(0),
       cameraPosition: at(0),
+      simTimeSeconds: seconds(0),
     });
     // The stub has no orbit, as the Sun has none.
     expect(text.orbit).toBe('—');
@@ -105,11 +109,13 @@ describe('the card text', () => {
       bodyPosition: at(0),
       starPosition: at(0),
       cameraPosition: at(0),
+      simTimeSeconds: seconds(0),
     });
     expect(Object.keys(text).toSorted((a, b) => a.localeCompare(b))).toStrictEqual([
       'distance-camera',
       'distance-star',
       'gravity',
+      'local-time',
       'mass',
       'mode',
       'orbit',

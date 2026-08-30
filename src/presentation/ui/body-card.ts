@@ -12,30 +12,25 @@
  * @module
  */
 
-import type { Body } from '@domain/body';
+import type { BodyFactsInput } from '@domain/body-facts';
+import { computeBodyFacts } from '@domain/body-facts';
 import {
-  computeBodyFacts,
   formatDistance,
+  formatLocalTime,
   formatMass,
   formatPeriod,
   formatRadius,
   formatSurfaceGravity,
-} from '@domain/body-facts';
+} from '@domain/body-format';
 import { CAMERA_MODE_LABELS, type CameraMode } from '@domain/camera/camera-mode';
-import type { ReadonlyVec3 } from '@shared/math/vec3';
 
-/** What the card needs to redraw itself. */
-export interface CardUpdate {
-  /** The body being followed. */
-  readonly body: Body;
+/**
+ * What the card needs to redraw itself: everything the facts are derived from,
+ * plus the one thing that is a property of the view rather than the world.
+ */
+export interface CardUpdate extends BodyFactsInput {
   /** The active camera mode. */
   readonly mode: CameraMode;
-  /** The body's position, in true heliocentric metres. */
-  readonly bodyPosition: ReadonlyVec3;
-  /** The star's position. */
-  readonly starPosition: ReadonlyVec3;
-  /** The camera's position. */
-  readonly cameraPosition: ReadonlyVec3;
 }
 
 /** The rows of the stats card, in display order. */
@@ -48,6 +43,7 @@ const CARD_FIELDS = [
   ['gravity', 'Surface gravity'],
   ['rotation', 'Rotation'],
   ['orbit', 'Orbital period'],
+  ['local-time', 'Local time'],
 ] as const;
 
 /** A field name from {@link CARD_FIELDS}. */
@@ -122,12 +118,7 @@ export function buildCard(parent: HTMLElement, initialName: string): CardCells {
  * @returns The text for each field.
  */
 export function cardText(update: CardUpdate): Readonly<Record<CardField, string>> {
-  const facts = computeBodyFacts(
-    update.body,
-    update.bodyPosition,
-    update.starPosition,
-    update.cameraPosition,
-  );
+  const facts = computeBodyFacts(update);
 
   return {
     mode: CAMERA_MODE_LABELS[update.mode],
@@ -138,6 +129,7 @@ export function cardText(update: CardUpdate): Readonly<Record<CardField, string>
     gravity: formatSurfaceGravity(facts.surfaceGravityMetersPerSecondSquared),
     rotation: formatPeriod(facts.rotationPeriod),
     orbit: formatPeriod(facts.orbitalPeriod),
+    'local-time': formatLocalTime(facts.localSolarTime),
   };
 }
 

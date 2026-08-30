@@ -45,6 +45,7 @@ function refresh(bodyId: string, mode = CameraMode.Orbit): void {
     bodyPosition: system.readPosition(bodyId, createVec3()),
     starPosition: system.readPosition(catalog.root.id, createVec3()),
     cameraPosition: createVec3(),
+    simTimeSeconds: seconds(0),
   });
 }
 
@@ -209,6 +210,7 @@ describe('the stats card', () => {
       bodyPosition: createVec3(),
       starPosition: createVec3(),
       cameraPosition: createVec3(),
+      simTimeSeconds: seconds(0),
     });
     expect(host.querySelector('.browser__title')?.textContent).toBe('Mars');
   });

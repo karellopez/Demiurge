@@ -180,3 +180,25 @@ export function angularSeparation(first: Radians, second: Radians): Radians {
   // same separation.
   return radians(difference > Math.PI ? twoPi - difference : difference);
 }
+
+/**
+ * Writes the normal of an orbital plane: the direction of angular momentum.
+ *
+ * This, not ecliptic north, is what a body's axial tilt is measured against.
+ * The two differ by the orbit's inclination, which is under two degrees for
+ * every planet and therefore just large enough to make a tilt look right while
+ * being a degree wrong.
+ *
+ * @param out - The vector to write into.
+ * @param elements - The orbit, evaluated at the moment of interest.
+ * @returns `out`, a unit vector in the ecliptic frame.
+ */
+export function orbitNormal(out: Vec3, elements: EvaluatedElements): Vec3 {
+  const sinInclination = Math.sin(elements.inclination);
+  return set(
+    out,
+    sinInclination * Math.sin(elements.longitudeOfAscendingNode),
+    -sinInclination * Math.cos(elements.longitudeOfAscendingNode),
+    Math.cos(elements.inclination),
+  );
+}
