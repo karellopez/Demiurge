@@ -60,13 +60,63 @@ function formatLength(lengthMeters: number): string {
     : `${lengthMeters.toFixed(1)} m`;
 }
 
+/** The readout cells the title screen fills in once the tier is known. */
+interface BootReadouts {
+  readonly seed: HTMLElement;
+  readonly tier: HTMLElement;
+  readonly target: HTMLElement;
+  readonly drawCalls: HTMLElement;
+  readonly terrain: HTMLElement;
+  readonly renderer: HTMLElement;
+}
+
+/**
+ * Builds the panel of readouts.
+ *
+ * @param parent - The element to append the panel to.
+ * @returns The value cells, kept for the report to fill in.
+ */
+function buildReadoutPanel(parent: HTMLElement): BootReadouts {
+  const panel = document.createElement('div');
+  panel.className = 'boot-screen__panel';
+
+  const rows = [
+    createReadout('Session seed'),
+    createReadout('Quality tier'),
+    createReadout('Frame target'),
+    createReadout('Draw call budget'),
+    createReadout('Terrain detail'),
+    createReadout('Renderer'),
+  ] as const;
+
+  for (const row of rows) {
+    panel.append(row.row);
+  }
+  parent.append(panel);
+
+  return {
+    seed: rows[0].valueCell,
+    tier: rows[1].valueCell,
+    target: rows[2].valueCell,
+    drawCalls: rows[3].valueCell,
+    terrain: rows[4].valueCell,
+    renderer: rows[5].valueCell,
+  };
+}
+
+/** The title screen: a diagnostics sink that can also get out of the way. */
+export interface BootScreen extends DiagnosticsSink {
+  /** Removes the title screen, revealing the simulation behind it. */
+  dismiss(): void;
+}
+
 /**
  * Mounts the title screen into a host element.
  *
  * @param host - The element the screen is mounted into. Its content is replaced.
- * @returns A sink that renders boot diagnostics into the mounted screen.
+ * @returns A sink that renders boot diagnostics, and can dismiss itself.
  */
-export function mountBootScreen(host: HTMLElement): DiagnosticsSink {
+export function mountBootScreen(host: HTMLElement): BootScreen {
   host.replaceChildren();
 
   const screen = document.createElement('section');
@@ -80,29 +130,17 @@ export function mountBootScreen(host: HTMLElement): DiagnosticsSink {
   tagline.className = 'boot-screen__tagline';
   tagline.textContent = TAGLINE;
 
-  const panel = document.createElement('div');
-  panel.className = 'boot-screen__panel';
-
-  const seedReadout = createReadout('Session seed');
-  const tierReadout = createReadout('Quality tier');
-  const targetReadout = createReadout('Frame target');
-  const drawCallReadout = createReadout('Draw call budget');
-  const terrainReadout = createReadout('Terrain detail');
-  const rendererReadout = createReadout('Renderer');
-
-  panel.append(
-    seedReadout.row,
-    tierReadout.row,
-    targetReadout.row,
-    drawCallReadout.row,
-    terrainReadout.row,
-    rendererReadout.row,
-  );
+  const cells = buildReadoutPanel(screen);
 
   const reason = document.createElement('p');
   reason.className = 'boot-screen__reason';
 
-  screen.append(title, tagline, panel, reason);
+  const prompt = document.createElement('p');
+  prompt.className = 'boot-screen__prompt';
+  prompt.textContent = 'Press any key to begin';
+
+  screen.append(reason, prompt);
+  screen.prepend(title, tagline);
   host.append(screen);
 
   return {
@@ -110,16 +148,20 @@ export function mountBootScreen(host: HTMLElement): DiagnosticsSink {
       const budget = budgetFor(selection.tier);
       const fps = String(budget.targetFramesPerSecond);
 
-      seedReadout.valueCell.textContent = seedPhrase;
-      tierReadout.valueCell.textContent = selection.tier.toUpperCase();
-      targetReadout.valueCell.textContent = `${fps} fps · p95 ${budget.frameTimeP95Ms.toFixed(1)} ms`;
-      drawCallReadout.valueCell.textContent = String(budget.maxDrawCalls);
-      terrainReadout.valueCell.textContent = `${formatLength(toRawMeters(budget.terrainVertexSpacing))} per vertex`;
-      rendererReadout.valueCell.textContent =
+      cells.seed.textContent = seedPhrase;
+      cells.tier.textContent = selection.tier.toUpperCase();
+      cells.target.textContent = `${fps} fps · p95 ${budget.frameTimeP95Ms.toFixed(1)} ms`;
+      cells.drawCalls.textContent = String(budget.maxDrawCalls);
+      cells.terrain.textContent = `${formatLength(toRawMeters(budget.terrainVertexSpacing))} per vertex`;
+      cells.renderer.textContent =
         capabilities.rendererDescription === ''
           ? 'not disclosed'
           : capabilities.rendererDescription;
       reason.textContent = selection.reason;
+    },
+
+    dismiss(): void {
+      screen.remove();
     },
   };
 }

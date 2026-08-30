@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { describeBootFailure, readSeedFromHash, startApplication } from '@app/composition-root';
+import { describeBootFailure } from '@app/boot-failure';
+import { startApplication } from '@app/composition-root';
+import { readSeedFromHash } from '@app/session-url';
 import { QualityTier } from '@domain/quality-tier';
 import { probeHostCapabilities } from '@presentation/render/webgl-host-capabilities';
 import {

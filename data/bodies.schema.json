@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/karellopez/Demiurge/data/bodies.schema.json",
+  "title": "Demiurge body catalogue",
+  "description": "Every body the simulation knows about. Validated at load and in CI, so a typo in a radius fails the build rather than becoming a planet the wrong size.",
+  "type": "object",
+  "required": ["epoch", "sources", "bodies"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "epoch": { "type": "string" },
+    "sources": {
+      "type": "object",
+      "description": "Citation text, keyed by the token each body's orbit refers to.",
+      "additionalProperties": { "type": "string" }
+    },
+    "bodies": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/body" }
+    }
+  },
+  "$defs": {
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "parent",
+        "equatorialRadiusKm",
+        "polarRadiusKm",
+        "gravitationalParameterKm3PerS2",
+        "rotationPeriodDays",
+        "poleRightAscensionDeg",
+        "poleDeclinationDeg",
+        "primeMeridianDeg",
+        "primeMeridianRateDegPerDay",
+        "albedo",
+        "orbit"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Stable machine identifier. Used in save files, so changing one invalidates saved worlds."
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["star", "planet", "dwarf-planet", "moon"] },
+        "parent": {
+          "type": ["string", "null"],
+          "description": "The body this one orbits, or null for the root of the system."
+        },
+        "equatorialRadiusKm": { "type": "number", "exclusiveMinimum": 0 },
+        "polarRadiusKm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Must not exceed the equatorial radius; oblateness is visible on Jupiter and Saturn and is not decorative."
+        },
+        "gravitationalParameterKm3PerS2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "GM rather than mass, because the product is measured to far more significant figures than either factor."
+        },
+        "rotationPeriodDays": {
+          "type": "number",
+          "description": "Sidereal rotation period. Negative for retrograde rotation, as Venus and Uranus have."
+        },
+        "poleRightAscensionDeg": { "type": "number" },
+        "poleDeclinationDeg": { "type": "number", "minimum": -90, "maximum": 90 },
+        "primeMeridianDeg": {
+          "type": "number",
+          "description": "W0: the prime meridian's angle at J2000, which is what makes a surface feature appear at the right longitude on the right date."
+        },
+        "primeMeridianRateDegPerDay": { "type": "number" },
+        "albedo": { "type": "number", "minimum": 0, "maximum": 2 },
+        "rings": { "$ref": "#/$defs/rings" },
+        "orbit": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/standishOrbit" },
+            { "$ref": "#/$defs/osculatingOrbit" }
+          ]
+        }
+      }
+    },
+    "rings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["innerRadiusKm", "outerRadiusKm"],
+      "properties": {
+        "$comment": { "type": "string" },
+        "innerRadiusKm": { "type": "number", "exclusiveMinimum": 0 },
+        "outerRadiusKm": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "standishOrbit": {
+      "type": "object",
+      "description": "Mean elements with per-century rates, in the form Standish's tables publish. Used for the planets.",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "source",
+        "semiMajorAxisAu",
+        "eccentricity",
+        "inclinationDeg",
+        "meanLongitudeDeg",
+        "longitudeOfPerihelionDeg",
+        "longitudeOfAscendingNodeDeg",
+        "semiMajorAxisRateAuPerCentury",
+        "eccentricityRatePerCentury",
+        "inclinationRateDegPerCentury",
+        "meanLongitudeRateDegPerCentury",
+        "longitudeOfPerihelionRateDegPerCentury",
+        "longitudeOfAscendingNodeRateDegPerCentury"
+      ],
+      "properties": {
+        "form": { "const": "standish" },
+        "source": { "type": "string" },
+        "$comment": { "type": "string" },
+        "semiMajorAxisAu": { "type": "number", "exclusiveMinimum": 0 },
+        "eccentricity": { "type": "number", "minimum": 0, "exclusiveMaximum": 1 },
+        "inclinationDeg": { "type": "number" },
+        "meanLongitudeDeg": { "type": "number" },
+        "longitudeOfPerihelionDeg": { "type": "number" },
+        "longitudeOfAscendingNodeDeg": { "type": "number" },
+        "semiMajorAxisRateAuPerCentury": { "type": "number" },
+        "eccentricityRatePerCentury": { "type": "number" },
+        "inclinationRateDegPerCentury": { "type": "number" },
+        "meanLongitudeRateDegPerCentury": { "type": "number" },
+        "longitudeOfPerihelionRateDegPerCentury": { "type": "number" },
+        "longitudeOfAscendingNodeRateDegPerCentury": { "type": "number" }
+      }
+    },
+    "osculatingOrbit": {
+      "type": "object",
+      "description": "Osculating elements at J2000 with a period, in the form JPL Horizons reports them. Used for the moons and the dwarf planets, where no fitted mean-element table exists.",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "source",
+        "semiMajorAxisKm",
+        "eccentricity",
+        "inclinationDeg",
+        "longitudeOfAscendingNodeDeg",
+        "argumentOfPeriapsisDeg",
+        "meanAnomalyDeg",
+        "orbitalPeriodDays"
+      ],
+      "properties": {
+        "form": { "const": "osculating" },
+        "source": { "type": "string" },
+        "$comment": { "type": "string" },
+        "semiMajorAxisKm": { "type": "number", "exclusiveMinimum": 0 },
+        "eccentricity": { "type": "number", "minimum": 0, "exclusiveMaximum": 1 },
+        "inclinationDeg": { "type": "number", "minimum": 0, "maximum": 180 },
+        "longitudeOfAscendingNodeDeg": { "type": "number" },
+        "argumentOfPeriapsisDeg": { "type": "number" },
+        "meanAnomalyDeg": { "type": "number" },
+        "orbitalPeriodDays": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    }
+  }
+}

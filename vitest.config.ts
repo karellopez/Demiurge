@@ -60,12 +60,13 @@ export default defineConfig({
         'src/**/index.ts',
         'src/**/*.d.ts',
         'src/app/main.ts',
-        // Needs a real WebGL context, which neither happy-dom nor jsdom
-        // provides. It is covered by the Playwright visual-regression suite,
-        // which renders it on a real GPU and compares the result to a committed
-        // baseline; counting it here would only measure how good our stubs are.
-        'src/presentation/render/precision-scene.ts',
-        'src/presentation/render/precision-cubes.ts',
+        // These need a real WebGL context, which neither happy-dom nor jsdom
+        // provides. They are covered by the Playwright suites, which render on a
+        // real GPU; counting them here would only measure how good our stubs are.
+        'src/presentation/render/solar-system-scene.ts',
+        'src/presentation/render/body-appearance.ts',
+        'src/presentation/render/orbit-line.ts',
+        'src/presentation/render/space-scene.ts',
       ],
       // Gates mirror docs/quality.md §5.1. `scripts/qa-report.ts` re-checks the
       // per-layer floors for `shared/` and `domain/`, which Vitest thresholds

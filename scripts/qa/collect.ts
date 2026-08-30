@@ -250,6 +250,24 @@ export function collectArchitecture(cwd: string): Gate[] {
 }
 
 /**
+ * Validates the body catalogue against its schema and its invariants.
+ *
+ * A mistyped radius would not crash anything; it would quietly produce a planet
+ * the wrong size, which is worse. So the catalogue is a gate.
+ *
+ * @param cwd - The repository root.
+ * @returns The catalogue-validity gate.
+ */
+export function collectDataSchema(cwd: string): Gate {
+  const result = run('npm', ['run', '--silent', 'validate:data'], { cwd });
+  return booleanGate('data-schema', 'Body catalogue schema + invariants', 'ajv', {
+    passed: result.succeeded,
+    threshold: 'valid',
+    detail: result.succeeded ? undefined : summarise(result.stdout || result.stderr, 12),
+  });
+}
+
+/**
  * Looks for dead code, unused exports and unused dependencies.
  *
  * @param cwd - The repository root.

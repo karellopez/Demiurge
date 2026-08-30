@@ -9,15 +9,21 @@
  * @module
  */
 
+import type { BodyCatalog } from '@domain/body';
 import { resolveSessionSeed } from '@domain/session-seed';
+import { INITIAL_TIME_SCALE, multiplierFor, type TimeScaleState } from '@domain/time-scale';
 import { detectQualityTier } from '@features/diagnostics/detect-quality-tier';
 import type { DiagnosticsSink } from '@features/diagnostics/ports';
 import { createEngine, type Engine } from '@features/engine/engine';
+import type { Clock, FrameStats, StatsSink } from '@features/engine/ports';
+import { buildCatalog } from '@features/space/body-catalog';
+import type { RawCatalog } from '@features/space/catalog-schema';
 import {
   createAnimationFrameScheduler,
   createPerformanceClock,
 } from '@presentation/render/browser-frame-loop';
-import { createPrecisionScene } from '@presentation/render/precision-scene';
+import { createSolarSystemVisuals, placeVisual } from '@presentation/render/solar-system-scene';
+import { createSpaceScene } from '@presentation/render/space-scene';
 import { probeHostCapabilities } from '@presentation/render/webgl-host-capabilities';
 import {
   combineDiagnosticsSinks,
@@ -25,12 +31,12 @@ import {
   mountBootScreen,
 } from '@presentation/ui/boot-screen';
 import { mountStatsOverlay, type StatsOverlay } from '@presentation/ui/stats-overlay';
+import { mountTimeHud, type TimeHud } from '@presentation/ui/time-hud';
 import { err, ok, type Result } from '@shared/result';
 
-/** Why start-up could not proceed. Expected failures, not programmer errors. */
-export type BootFailure =
-  | { readonly kind: 'missing-mount-point'; readonly selector: string }
-  | { readonly kind: 'webgl2-unavailable' };
+import rawCatalog from '../../data/bodies.json';
+
+import type { BootFailure } from './boot-failure';
 
 /** Everything the caller needs to hand `startApplication` its outside world. */
 export interface BootOptions {
@@ -54,26 +60,45 @@ export interface RunningApplication {
   readonly tier: string;
   /** The canonical seed this universe was generated from. */
   readonly seedPhrase: string;
+  /** How many bodies the catalogue loaded. */
+  readonly bodyCount: number;
   /** The statistics overlay, so `F3` can toggle it. */
   readonly stats: StatsOverlay;
+  /**
+   * Clears the title screen.
+   *
+   * The simulation runs behind it from the first frame, so this is a curtain
+   * rather than a loading gate. Phase 4 puts the shader warm-up progress here,
+   * which is the point at which waiting for the player to press a key stops
+   * being politeness and starts being useful.
+   */
+  dismissTitleScreen(): void;
   /** The engine, or `undefined` when the render loop was not started. */
   readonly engine: Engine | undefined;
+  /**
+   * Applies a new time-warp setting to both the engine and the readout.
+   *
+   * @param state - The new position on the ladder.
+   */
+  setTimeScale(state: TimeScaleState): void;
   /** Releases everything the application holds. */
   dispose(): void;
 }
 
 /**
- * Reads the session seed out of a URL hash such as `#seed=cobalt%20meridian`.
+ * Fans one frame's statistics out to several sinks.
  *
- * A configuration being a shareable link is a product requirement, so the seed
- * lives in the URL rather than only in storage.
- *
- * @param hash - The `location.hash` value, with or without its leading `#`.
- * @returns The requested seed, or `undefined` when the hash carries none.
+ * @param sinks - The sinks to notify.
+ * @returns A sink that forwards to all of them.
  */
-export function readSeedFromHash(hash: string): string | undefined {
-  const parameters = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
-  return parameters.get('seed') ?? undefined;
+function combineStatsSinks(sinks: readonly StatsSink[]): StatsSink {
+  return {
+    publish(stats: FrameStats): void {
+      for (const sink of sinks) {
+        sink.publish(stats);
+      }
+    },
+  };
 }
 
 /**
@@ -87,6 +112,68 @@ function createSceneCanvas(host: HTMLElement): HTMLCanvasElement {
   canvas.className = 'scene';
   host.append(canvas);
   return canvas;
+}
+
+/** The pieces of chrome the composition root mounts. */
+interface MountedUi {
+  readonly bootScreen: ReturnType<typeof mountBootScreen>;
+  readonly stats: StatsOverlay;
+  readonly timeHud: TimeHud;
+}
+
+/**
+ * Mounts the interface and reports the boot diagnostics into it.
+ *
+ * @param host - The element everything mounts into.
+ * @param report - What was settled at boot.
+ * @param nowMs - Reads wall-clock milliseconds, for the throttled readouts.
+ * @returns Handles for the mounted chrome.
+ */
+function mountUi(
+  host: HTMLElement,
+  report: Parameters<DiagnosticsSink['report']>[0],
+  nowMs: () => number,
+): MountedUi {
+  const bootScreen = mountBootScreen(host);
+  combineDiagnosticsSinks([bootScreen, createConsoleDiagnosticsSink()]).report(report);
+
+  const stats = mountStatsOverlay(host, report.selection.tier, nowMs);
+  const timeHud = mountTimeHud(host, report.seedPhrase, nowMs);
+  timeHud.setTimeScale(INITIAL_TIME_SCALE);
+
+  return { bootScreen, stats, timeHud };
+}
+
+/**
+ * Builds and starts the engine.
+ *
+ * @param host - The element the scene canvas is appended to.
+ * @param catalog - The bodies to simulate.
+ * @param clock - The session clock.
+ * @param stats - Where per-frame measurements go.
+ * @returns The running engine.
+ */
+function startEngine(
+  host: HTMLElement,
+  catalog: BodyCatalog,
+  clock: Clock,
+  stats: StatsSink,
+): Engine {
+  const engine = createEngine({
+    clock,
+    scheduler: createAnimationFrameScheduler(),
+    scene: createSpaceScene({
+      canvas: createSceneCanvas(host),
+      catalog,
+      buildVisuals: createSolarSystemVisuals,
+      wallClockSeconds: () => clock.nowSeconds(),
+      place: placeVisual,
+    }),
+    stats,
+  });
+  engine.setTimeScale(multiplierFor(INITIAL_TIME_SCALE));
+  engine.start();
+  return engine;
 }
 
 /**
@@ -108,55 +195,38 @@ export function startApplication(options: BootOptions): Result<RunningApplicatio
 
   const session = resolveSessionSeed(options.requestedSeed);
   const selection = detectQualityTier(capabilities);
-
-  const sink: DiagnosticsSink = combineDiagnosticsSinks([
-    mountBootScreen(host),
-    createConsoleDiagnosticsSink(),
-  ]);
-  sink.report({ selection, capabilities, seedPhrase: session.phrase });
+  const catalog = buildCatalog(rawCatalog as unknown as RawCatalog);
 
   const clock = createPerformanceClock();
-  const stats = mountStatsOverlay(host, selection.tier, () => clock.nowSeconds() * 1000);
+  const nowMs = (): number => clock.nowSeconds() * 1000;
+  const { bootScreen, stats, timeHud } = mountUi(
+    host,
+    { selection, capabilities, seedPhrase: session.phrase },
+    nowMs,
+  );
 
   const engine = options.startRenderLoop
-    ? createEngine({
-        clock,
-        scheduler: createAnimationFrameScheduler(),
-        scene: createPrecisionScene(createSceneCanvas(host)),
-        stats,
-      })
+    ? startEngine(host, catalog, clock, combineStatsSinks([stats, timeHud]))
     : undefined;
-  engine?.start();
 
   return ok({
     tier: selection.tier,
     seedPhrase: session.phrase,
+    bodyCount: catalog.all.length,
     stats,
     engine,
+    dismissTitleScreen(): void {
+      bootScreen.dismiss();
+    },
+    setTimeScale(state: TimeScaleState): void {
+      engine?.setTimeScale(multiplierFor(state));
+      timeHud.setTimeScale(state);
+    },
     dispose(): void {
       engine?.stop();
+      timeHud.dispose();
       stats.dispose();
       host.replaceChildren();
     },
   });
-}
-
-/**
- * Renders a start-up failure as something a person can act on.
- *
- * A blank page with a console stack trace is the worst possible outcome on a
- * static host, so every expected failure gets a readable message on screen.
- *
- * @param failure - The reason start-up stopped.
- * @returns A sentence explaining what happened and what to try.
- */
-export function describeBootFailure(failure: BootFailure): string {
-  switch (failure.kind) {
-    case 'missing-mount-point': {
-      return `Demiurge could not start: no element matched "${failure.selector}".`;
-    }
-    case 'webgl2-unavailable': {
-      return 'Demiurge needs WebGL2, which this browser did not provide. Try a current Chrome, Edge, Firefox or Safari, and check that hardware acceleration is enabled.';
-    }
-  }
 }

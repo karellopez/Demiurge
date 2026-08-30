@@ -237,3 +237,20 @@ describe('exactness the mutation suite pins down', () => {
     expect(isApproximately(createVec3(0, 0, 0), createVec3(0, 0, 0.75), 0.5)).toBe(false);
   });
 });
+
+describe('the cross product component by component', () => {
+  it('subtracts rather than adds in every component', () => {
+    // Distinct values in every slot, so a sign or operator slip in any one of
+    // the three components changes the result.
+    const result = cross(createVec3(), createVec3(2, 3, 5), createVec3(7, 11, 13));
+    expectVec3(result, 3 * 13 - 5 * 11, 5 * 7 - 2 * 13, 2 * 11 - 3 * 7);
+  });
+
+  it('anticommutes', () => {
+    const first = createVec3(2, 3, 5);
+    const second = createVec3(7, 11, 13);
+    const forward = cross(createVec3(), first, second);
+    const backward = cross(createVec3(), second, first);
+    expectVec3(backward, -forward.x, -forward.y, -forward.z);
+  });
+});

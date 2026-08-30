@@ -189,3 +189,62 @@ body {
 .stat__value--over::after {
   content: ' !';
 }
+
+/* -- simulated date and time warp ---------------------------------------- */
+
+.time-hud {
+  position: fixed;
+  bottom: calc(var(--step) * 2);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: calc(var(--step) * 3);
+  align-items: baseline;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  padding: var(--step) calc(var(--step) * 2);
+  backdrop-filter: blur(2px);
+}
+
+.time-hud__date {
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+
+.time-hud__rate {
+  color: var(--signal);
+  min-width: 9ch;
+  text-align: right;
+}
+
+/*
+ * Paused and reversed are states a player must notice at a glance. Colour alone
+ * never conveys state here, so each also gains a marker.
+ */
+.time-hud__rate--paused {
+  color: var(--ink-dim);
+}
+
+.time-hud__rate--paused::before {
+  content: '|| ';
+}
+
+.time-hud__rate--reverse {
+  color: var(--warn);
+}
+
+.time-hud__seed {
+  color: var(--ink-dim);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.boot-screen__prompt {
+  margin: calc(var(--step) * 3) 0 0;
+  color: var(--signal);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}

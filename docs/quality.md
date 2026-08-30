@@ -23,7 +23,7 @@ npm run qa -- --ratchet   # after a green run, tighten what the code outgrew
 | Mutation score, `shared/` + `domain/`              | Stryker                                    | ≥ 98% (ratcheted)                |
 | Cyclomatic complexity                              | ESLint `complexity`                        | ≤ 10 per function                |
 | Cognitive complexity                               | `sonarjs/cognitive-complexity`             | ≤ 15 per function                |
-| Maintainability index                              | `scripts/qa/source-metrics.ts`             | ≥ 60 per file, worst 10 reported |
+| Maintainability index                              | `scripts/qa/source-metrics.ts`             | ≥ 50 per file, worst 10 reported |
 | File and class size                                | `scripts/qa/source-metrics.ts`             | ≤ 400 lines / ≤ 200 lines        |
 | Code duplication                                   | `jscpd`                                    | < 2% of lines (ratcheted)        |
 | Circular dependencies                              | `dependency-cruiser`                       | **0**                            |

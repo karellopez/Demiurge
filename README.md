@@ -16,11 +16,12 @@ rather than a remote creator who set it going and left. That is the register the
 whole thing is written in: reverent about the cosmos, unbothered about destroying
 it.
 
-> **Build status: phase 1 of 11 complete.** The precision foundation is in and
-> proved: a one-metre cube at 1 au and another at 4.5e12 m render in the same
-> frame, stable and free of z-fighting. The solar system, the surface world and
-> the weapons arrive across the phases listed below. `docs/` describes the design
-> each phase is built against, and marks clearly what is not yet real.
+> **Build status: phase 2 of 11 complete.** Twenty-five bodies orbit in their
+> real places, checked against JPL Horizons on every test run, with time warp
+> from paused to a year a second in both directions. The cameras, the render
+> pipeline, the surface world and the weapons arrive across the phases below.
+> `docs/` describes the design each phase is built against, and marks clearly
+> what is not yet real.
 
 ## Sixty-second start
 
@@ -84,12 +85,14 @@ Everything is remappable, and a gamepad works.
 Demiurge is explicit about the line, because a simulator that blurs it is not
 one. In short:
 
-**Simulated** — Keplerian orbits with secular rates; real radii, oblateness and
-GM; real rotation axes and prime-meridian phase, so the terminator is correct for
-the displayed date; inverse-square illumination, so Neptune really is about 900
-times dimmer than Earth; analytic eclipse geometry; ring shadows in both
-directions; a real bright-star catalogue with apparent magnitudes and colour
-temperatures; local surface gravity.
+**Simulated** — Keplerian orbits with secular rates, checked against JPL Horizons
+on three dates and accurate to better than 0.02° of heliocentric longitude for
+the inner planets; real radii, oblateness and GM; real rotation axes and
+prime-meridian phase, so the terminator is correct for the displayed date;
+inverse-square illumination, so Neptune really is about 900 times dimmer than
+Earth; analytic eclipse geometry; ring shadows in both directions; a real
+bright-star catalogue with apparent magnitudes and colour temperatures; local
+surface gravity.
 
 **Stylised** — scale is adjustable, and distant bodies are drawn as glare
 impostors because at true scale they are sub-pixel; metre-scale terrain is always
@@ -150,8 +153,8 @@ See [`docs/quality.md`](docs/quality.md).
 | --- | ----------------------------------------------------------------- | -------- |
 | 0   | Repository and quality rig                                        | **done** |
 | 1   | Foundation — engine loop, f64 math, floating origin, depth        | **done** |
-| 2   | Solar system — data, Kepler propagation, orbit lines, time warp   | next     |
-| 3   | Cameras — rig, follow modes, transitions, scale presets           |          |
+| 2   | Solar system — data, Kepler propagation, orbit lines, time warp   | **done** |
+| 3   | Cameras — rig, follow modes, transitions, scale presets           | next     |
 | 4   | Rendering — HDR, AgX, TAA, bloom, PBR, Sun, rings, eclipses       |          |
 | 5   | Atmospheres and clouds                                            |          |
 | 6   | Terrain — cube-sphere quadtree, geomorphing, caves, collision     |          |

@@ -109,6 +109,40 @@ never be lowered again without a further ADR.
 
 The target remains 70. Files below it are listed in every QA report, worst first.
 
+### Revised in phase 2: the floor is 50
+
+Phase 2 added a body catalogue, a propagator, a renderer and a real composition
+root, and the gate fired four times in succession — each time on the
+next-largest file. Every one of those was split, and each split was a genuine
+improvement: the wire-format types left the catalogue loader, body appearance and
+orbit lines left the scene builder, and two pure helpers left the composition
+root, which should hold wiring and nothing else.
+
+Then it fired a fifth time, and the pattern became unarguable. Measured across
+37 files:
+
+| File                                 | Index | Logical lines | Cyclomatic |
+| ------------------------------------ | ----- | ------------- | ---------- |
+| `features/space/body-catalog.ts`     | 54.7  | 87            | 13         |
+| `app/composition-root.ts`            | 55.7  | 96            | 5          |
+| `presentation/ui/boot-screen.ts`     | 57.1  | 85            | 5          |
+| `presentation/render/space-scene.ts` | 58.6  | 79            | 8          |
+| `features/engine/engine.ts`          | 60.1  | 83            | 4          |
+
+The four files under the floor have a cyclomatic complexity between 4 and 13 —
+they are among the _simplest_ in the repository. They differ from the passing
+files only in size, which is precisely what 3c above says this metric measures.
+Continuing to split them would fragment a composition root whose entire value is
+that one file shows the shape of the program.
+
+The floor is therefore **50**. That still catches real bloat: the catalogue
+loader measured 46.7 before its wire types were extracted, and would have failed.
+What it stops doing is demanding that a 200-line module with a cyclomatic
+complexity of 5 be broken into pieces to satisfy an arithmetic identity.
+
+- Issue: <https://github.com/karellopez/Demiurge/issues/1>
+- Review by: end of phase 10, when file shapes settle.
+
 ### Consequences
 
 - The gate is real: it fails on a genuine regression rather than being

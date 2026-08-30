@@ -75,8 +75,9 @@ export function createFrameWindow(capacity: number): FrameWindow {
       if (filled === 0) {
         return 0;
       }
-      // Stryker disable next-line all: the cache is a pure optimisation; with or
-      // without it the answer is identical, so every mutant here is equivalent.
+      // Stryker disable all: the cache is a pure optimisation. With it or
+      // without it the answer is identical, only slower, so no test can
+      // distinguish a mutant in here.
       if (isSortedStale) {
         sorted.length = 0;
         // Iterating a subarray yields `number` rather than `number | undefined`,
@@ -85,9 +86,9 @@ export function createFrameWindow(capacity: number): FrameWindow {
           sorted.push(value);
         }
         sorted.sort((a, b) => a - b);
-        // Stryker disable next-line all: see above.
         isSortedStale = false;
       }
+      // Stryker restore all
       return percentileOfSorted(sorted, fraction);
     },
 

@@ -12,7 +12,13 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 /** Files that are tooling, not shipped code, and so carry relaxed budgets. */
-const TOOLING_GLOBS = ['scripts/**/*.ts', '*.config.ts', '*.config.js', 'tests/**/*.ts'];
+const TOOLING_GLOBS = [
+  'scripts/**/*.ts',
+  'scripts/**/*.mjs',
+  '*.config.ts',
+  '*.config.js',
+  'tests/**/*.ts',
+];
 
 export default tseslint.config(
   {
@@ -46,7 +52,7 @@ export default tseslint.config(
           // The app and the tooling are separate TypeScript projects on purpose
           // (different libs, different globals); the warning is not actionable.
           defaultProject: 'tsconfig.app.json',
-          allowDefaultProject: ['*.js', '*.cjs'],
+          allowDefaultProject: ['*.js', '*.cjs', 'scripts/*.mjs'],
           // Two projects is the intended shape here, not a misconfiguration.
           maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 8,
         },
@@ -261,7 +267,7 @@ export default tseslint.config(
   // CommonJS tool configs sit outside every tsconfig, so they are linted
   // without type information rather than being excluded from linting entirely.
   {
-    files: ['**/*.js', '**/*.cjs'],
+    files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
     ...tseslint.configs.disableTypeChecked,
     languageOptions: {
       ...tseslint.configs.disableTypeChecked.languageOptions,

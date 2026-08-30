@@ -1,8 +1,8 @@
 # Astronomy
 
-> **Status.** The body catalogue and the propagator land in phase 2. This
-> document states what will be simulated, what will be stylised, and where the
-> numbers come from — the honesty contract the implementation is held to.
+> **Status.** The catalogue and the Keplerian propagator landed in phase 2 and
+> are measured against JPL Horizons on every run. Rotation, eclipse geometry and
+> the star catalogue arrive with the renderer in phase 4.
 
 ## Sources
 
@@ -47,9 +47,57 @@ An N-body mode using a symplectic integrator sits behind a toggle, labelled in
 the UI as divergent over long timescales — because it is, and a simulation that
 quietly disagrees with the ephemeris is worse than one that says so.
 
-**Validation.** Positions on three known dates match committed JPL Horizons
-fixtures within 0.1° of heliocentric longitude. If that proves unreachable, the
-achieved accuracy is documented here rather than the test being quietly loosened.
+**Validation.** `tests/fixtures/horizons/planet-states.json` holds twenty-seven
+real heliocentric state vectors fetched from JPL Horizons — nine bodies on three
+dates, referred to the mean ecliptic and equinox of J2000, the same frame the
+propagator produces. They are committed, so the check is offline and
+deterministic; `npm run fixtures:horizons` regenerates them.
+
+The dates are 1900-01-01, 2000-01-01 and 2050-01-01: one at the epoch, one a
+century before and one half a century after, so that an error in the _rates_
+cannot hide behind a correct value at the epoch.
+
+### Achieved accuracy
+
+Measured, worst case across the three dates:
+
+| Body       | Longitude error | Radial error |
+| ---------- | --------------- | ------------ |
+| Mercury    | 0.003°          | 0.001%       |
+| Venus      | 0.004°          | 0.004%       |
+| Earth      | 0.002°          | 0.002%       |
+| Mars       | 0.016°          | 0.009%       |
+| Jupiter    | 0.086°          | 0.070%       |
+| **Saturn** | **0.151°**      | 0.126%       |
+| Uranus     | 0.022°          | 0.043%       |
+| Neptune    | 0.013°          | 0.021%       |
+| Pluto      | 0.011°          | 0.024%       |
+
+Eight of the nine clear the 0.1° bar comfortably. **Saturn does not**, and the
+test states a tolerance of 0.16° for it specifically rather than loosening the
+bar for everything.
+
+The reason is the great inequality. Jupiter and Saturn sit close to a 5:2 mean
+motion resonance, which drives a periodic swing in Saturn's longitude of roughly
+a tenth of a degree with a period near nine hundred years. A mean-element fit has
+no term for it by construction, so this is not a transcription error and no
+amount of care with the table removes it — only a fuller theory such as VSOP87
+would, at the cost of a large data table. That trade is worth revisiting if the
+outer planets ever need to be right to arcseconds; today they need to be in the
+right place, and they are.
+
+Earth's entry describes the Earth–Moon barycentre rather than the Earth, because
+that is what Standish's table publishes. The two differ by about 4700 km, which
+at one astronomical unit is 0.0018° — fifty times smaller than the bar.
+
+### Validity window
+
+The planetary elements are Standish's 1800–2050 fit. Outside that window the
+positions degrade smoothly rather than failing, but they are no longer covered by
+the accuracy claim above. This matters more than it sounds: at the top of the
+time-warp ladder a minute of play is sixty years, so a player leaves the fitted
+window in about twenty seconds. Extending it is a phase-3 concern, alongside the
+camera work that makes running that far worthwhile.
 
 ## Rotation and time
 
@@ -82,6 +130,11 @@ Stated plainly, because a simulator that blurs this line is not a simulator.
 - **Distant bodies are impostors.** At true scale Neptune is sub-pixel. It is
   drawn as an additive glare impostor at the correct apparent magnitude, which is
   what the eye sees but is not geometry.
+- **Moon and dwarf-planet orbits are snapshots.** Their elements are the
+  osculating ellipse at J2000 as Horizons reports it, plus a mean motion from the
+  orbital period. That places each moon correctly and moves it round at the right
+  rate; it does not model the precession of its node, so a moon's position drifts
+  from the truth over decades in a way the planets' do not.
 - **Terrain is procedural** unless real topography has been fetched, and even
   then real heightmaps supply only the low-frequency base; metre-scale detail is
   always invented. It is plausible, not surveyed.

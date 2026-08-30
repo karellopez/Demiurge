@@ -90,6 +90,10 @@ export function planSteps(input: StepPlanInput): StepPlan {
   // Everything between what we ran and what we wanted is debt we have chosen not
   // to repay. Computed by subtraction rather than a modulo so that a 600-second
   // delta does not leave a rounding artefact behind.
+  // Stryker disable next-line all: `>` and `>=` are indistinguishable here. At
+  // exactly `wantedSteps === maxSubsteps` the debt is zero either way, because
+  // `available - consumed` and `subStepRemainder` are then the same number, so
+  // both arms produce the same carry and the same zero drop.
   const isBehind = wantedSteps > maxSubsteps;
   const dropped = isBehind ? available - consumed - subStepRemainder : 0;
   const carry = isBehind ? subStepRemainder : available - consumed;

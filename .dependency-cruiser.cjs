@@ -94,6 +94,10 @@ module.exports = {
           String.raw`\.d\.ts$`,
           String.raw`(^|/)tsconfig\.json$`,
           String.raw`(^|/)(babel|webpack)\.config\.(js|cjs|mjs|ts|json)$`,
+          // One-off provenance helpers, run by hand from a shell. Nothing
+          // imports them, which is the point; they exist so the numbers in
+          // `data/` can be traced back to where they came from.
+          String.raw`^scripts/.*\.mjs$`,
         ],
       },
       to: {},

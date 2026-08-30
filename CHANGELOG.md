@@ -11,6 +11,43 @@ Version tags begin at phase 5; before that the project is pre-release and the
 
 ### Added
 
+- **Phase 2 — the solar system.**
+  - `data/bodies.json`: twenty-five bodies — the Sun, eight planets, Pluto,
+    Ceres, Eris and thirteen moons — with radii, GM, rotation, pole and prime
+    meridian from the NASA fact sheets and the IAU WGCCRE report, and orbital
+    elements cited per body. Validated against a JSON Schema _and_ a set of
+    invariants JSON Schema cannot express (one root, no cycles, no dangling
+    parent, no prolate body, no ring inside its planet) by `npm run validate:data`,
+    which is now a gate.
+  - Keplerian propagation: Newton–Raphson below e = 0.9 and Halley above it,
+    tolerance 1e-12, with a capped iteration that reports its best estimate
+    rather than looping. Measured worst case across the whole (M, e) space is
+    seven iterations; the cap is never reached.
+  - **Accuracy measured against JPL Horizons.** Twenty-seven real state vectors,
+    nine bodies on three dates spanning 1900–2050, committed as fixtures.
+    Eight of nine planets are inside 0.1° of heliocentric longitude; Saturn is at
+    0.151° and carries a stated tolerance of its own with the reason. See
+    `docs/astronomy.md`.
+  - Moons ride with their planets: orbits accumulate down the catalogue tree, so
+    Io's heliocentric position is its own orbit about Jupiter plus Jupiter's
+    about the Sun.
+  - The space view: every body drawn at true size and lit by the Sun with
+    physical inverse-square falloff, oblate where the catalogue says so, plus an
+    additive glare that makes a body visible when its geometry is sub-pixel.
+    Orbit lines are sampled from the same propagator that places the body, so a
+    planet drifting off its own path would be a visible bug.
+  - Time warp: a seven-rung ladder from paused to a year a second, mirrored in
+    reverse, with `,` `.` to step, `R` to reverse and `P` to pause. Pausing
+    remembers its place on the ladder.
+  - A persistent bottom bar showing the seed, the simulated UTC date and the
+    rate. Paused and reversed are marked with a symbol and weight as well as
+    colour.
+  - The title screen now waits for a keypress instead of vanishing, with the
+    simulation already running behind it.
+  - `npm run fixtures:horizons` regenerates the accuracy fixtures from JPL.
+
+### Added
+
 - **Phase 1 — foundation.**
   - Floating origin. Simulation positions are f64 metres; each frame the
     camera's position becomes the render origin and everything is drawn at

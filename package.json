@@ -49,9 +49,11 @@
     "size": "size-limit",
     "audit:licenses": "license-checker-rseidelsohn --production --onlyAllow \"MIT;MIT OR X11;ISC;BSD;BSD-2-Clause;BSD-3-Clause;Apache-2.0;CC0-1.0;Unlicense;0BSD;Python-2.0;BlueOak-1.0.0\" --excludePrivatePackages",
     "qa": "tsx --tsconfig tsconfig.node.json scripts/qa-report.ts",
-    "verify": "npm run typecheck && npm run lint && npm run test:coverage && npm run build && npm run qa",
+    "verify": "npm run typecheck && npm run lint && npm run validate:data && npm run test:coverage && npm run build && npm run qa",
     "assets:fetch": "tsx --tsconfig tsconfig.node.json scripts/fetch-assets.ts",
-    "build:textures": "tsx --tsconfig tsconfig.node.json scripts/build-textures.ts"
+    "build:textures": "tsx --tsconfig tsconfig.node.json scripts/build-textures.ts",
+    "fixtures:horizons": "tsx --tsconfig tsconfig.node.json scripts/fetch-horizons-fixtures.ts",
+    "validate:data": "tsx --tsconfig tsconfig.node.json scripts/validate-data.ts"
   },
   "devDependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "^4.7.2",
@@ -63,6 +65,7 @@
     "@types/node": "22.19.1",
     "@types/three": "^0.185.0",
     "@vitest/coverage-v8": "4.1.11",
+    "ajv": "^8.20.0",
     "dependency-cruiser": "18.2.0",
     "eslint": "10.9.1",
     "eslint-import-resolver-typescript": "^4.4.5",

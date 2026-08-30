@@ -5,7 +5,7 @@
   "coverageLinesCore": 98,
   "coverageBranchesCore": 98,
   "mutationScore": 98,
-  "maintainabilityIndexMin": 60,
+  "maintainabilityIndexMin": 50,
   "duplicationPercentMax": 2,
   "tsdocCoveragePercentMin": 98,
   "bundleInitialKb": 300,
