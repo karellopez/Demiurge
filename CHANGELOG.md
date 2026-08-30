@@ -31,8 +31,11 @@ Version tags begin at phase 5; before that the project is pre-release and the
     feature layer.
   - A logarithmic depth buffer, spanning 0.01 m to 1e13 m in one pass
     (ADR 0005).
-  - The phase-1 acceptance scene: a one-metre cube at 1 au and another at
-    4.5e12 m, in one frame, stable and free of z-fighting.
+  - The phase-1 acceptance scene: a one-metre cube six metres away, a
+    hundred-kilometre sphere ten thousand kilometres away, and a one-metre cube
+    at 4.5e12 m, all in one frame, stable and free of z-fighting. The first two
+    are visible six orders of magnitude apart; the third is submitted and stable
+    but sub-pixel, which is the physical fact that motivates glare impostors.
   - The F3 statistics overlay: frame time, p50/p95/p99, draw calls and triangles
     against the tier budget, steps run and simulated time abandoned. Readings
     over budget are marked with weight and a symbol as well as colour.

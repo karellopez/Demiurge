@@ -3,10 +3,16 @@ import { expect, test } from '@playwright/test';
 /**
  * Phase 1's acceptance criterion.
  *
- * Two one-metre cubes, one at 1 au and one at 4.5e12 m, in the same frame. Both
- * must be visible, stable and free of z-fighting against a far plane thirteen
- * orders of magnitude away. A regression in the floating origin or in the depth
- * configuration shows up here as the far cube vanishing, tearing or flickering.
+ * Three bodies in one frame: a one-metre cube six metres away, a hundred-
+ * kilometre sphere ten thousand kilometres away, and a one-metre cube at
+ * 4.5e12 m. All three must be submitted, stable and free of z-fighting across a
+ * frustum spanning fifteen orders of magnitude.
+ *
+ * The draw-call count is the assertion that matters. Three means every body
+ * survived the transform with a finite, in-frustum position; the failure this
+ * catches is a body quietly disappearing because its render-space position came
+ * out as NaN or behind the camera, which is what a broken floating origin
+ * actually looks like.
  *
  * Note on method: reading the canvas back with `drawImage` does not work. A
  * WebGL drawing buffer is cleared once it has been composited unless
@@ -35,7 +41,8 @@ test('draws the scene, and says how much it drew', async ({ page }) => {
 
   // The counter starts at the em-dash placeholder and is filled on the first
   // throttled refresh, so waiting for a number is also waiting for a real frame.
-  await expect(drawCalls).toHaveText(/^[1-9]\d* \/ \d+$/u, { timeout: 10_000 });
+  // Three of three bodies drawn: none culled, none lost to a bad transform.
+  await expect(drawCalls).toHaveText(/^3 \/ \d+$/u, { timeout: 10_000 });
 
   const triangles = page.locator('.stat').filter({ hasText: 'Triangles' }).locator('.stat__value');
   await expect(triangles).not.toHaveText('—');

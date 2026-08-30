@@ -27,10 +27,14 @@ import type { SceneRenderer } from '@features/engine/ports';
 import { createVec3, set, type Vec3 } from '@shared/math/vec3';
 import { METERS_PER_AU, type Seconds } from '@shared/units';
 
-import { createSceneContents, disposeSceneContents } from './precision-cubes';
+import {
+  createSceneContents,
+  disposeSceneContents,
+  NEAR_CUBE_OFFSET_METERS,
+} from './precision-cubes';
 
-/** How far the camera orbits from the near cube, in metres. */
-const CAMERA_ORBIT_RADIUS_METERS = 4;
+/** How far the camera drifts to either side while looking down +X, in metres. */
+const CAMERA_DRIFT_METERS = 1.5;
 
 /** Seconds for the camera to complete one orbit. */
 const CAMERA_ORBIT_PERIOD_SECONDS = 20;
@@ -64,23 +68,22 @@ function createRenderer(canvas: HTMLCanvasElement): WebGLRenderer {
 /**
  * Places the camera in f64 world space for a given moment.
  *
- * It orbits the near cube slowly, which is what makes a precision failure
- * visible: a jittering cube is obvious against a moving camera and easy to miss
- * against a still one.
+ * The camera sits just behind the near cube looking down +X, so all three bodies
+ * are in front of it, and drifts gently sideways. The drift is what makes a
+ * precision failure visible: a jittering object is obvious against a moving
+ * camera and easy to miss against a still one.
  *
  * @param out - The vector to write the camera's world position into.
  * @param simTimeSeconds - Simulation time.
- * @returns The orbit angle, so the caller can aim the camera along it.
  */
-function placeCamera(out: Vec3, simTimeSeconds: number): number {
+function placeCamera(out: Vec3, simTimeSeconds: number): void {
   const angle = (simTimeSeconds / CAMERA_ORBIT_PERIOD_SECONDS) * Math.PI * 2;
   set(
     out,
-    METERS_PER_AU + Math.cos(angle) * CAMERA_ORBIT_RADIUS_METERS,
-    Math.sin(angle) * CAMERA_ORBIT_RADIUS_METERS * 0.35,
-    Math.sin(angle) * CAMERA_ORBIT_RADIUS_METERS,
+    METERS_PER_AU,
+    Math.sin(angle) * CAMERA_DRIFT_METERS * 0.4,
+    Math.cos(angle) * CAMERA_DRIFT_METERS,
   );
-  return angle;
 }
 
 /**
@@ -116,7 +119,7 @@ function resizeToCanvas(
  */
 export function createPrecisionScene(canvas: HTMLCanvasElement): SceneRenderer {
   const renderer = createRenderer(canvas);
-  const { scene, cubes } = createSceneContents();
+  const { scene, bodies } = createSceneContents();
   const camera = new PerspectiveCamera(55, 1, NEAR_PLANE_METERS, FAR_PLANE_METERS);
 
   // PERF: mutable for zero-alloc — reused every frame, for every cube.
@@ -131,16 +134,17 @@ export function createPrecisionScene(canvas: HTMLCanvasElement): SceneRenderer {
 
     render(): void {
       resizeToCanvas(renderer, camera, canvas);
-      const angle = placeCamera(cameraWorldPosition, currentSimTimeSeconds);
+      placeCamera(cameraWorldPosition, currentSimTimeSeconds);
 
       // The camera is the render origin, so in render space it is always at
-      // (0, 0, 0) and only ever rotates.
+      // (0, 0, 0) and only ever rotates. It looks down +X, past the near cube
+      // and on towards the sphere and, nominally, Neptune.
       camera.position.set(0, 0, 0);
-      camera.lookAt(-Math.cos(angle), 0, -Math.sin(angle));
+      camera.lookAt(NEAR_CUBE_OFFSET_METERS, 0, 0);
 
-      for (const cube of cubes) {
-        toRenderSpaceFloat32(renderPosition, cube.worldPositionMeters, cameraWorldPosition);
-        cube.mesh.position.set(renderPosition.x, renderPosition.y, renderPosition.z);
+      for (const body of bodies) {
+        toRenderSpaceFloat32(renderPosition, body.worldPositionMeters, cameraWorldPosition);
+        body.mesh.position.set(renderPosition.x, renderPosition.y, renderPosition.z);
       }
 
       renderer.render(scene, camera);
@@ -154,7 +158,7 @@ export function createPrecisionScene(canvas: HTMLCanvasElement): SceneRenderer {
     },
 
     dispose(): void {
-      disposeSceneContents(scene, cubes);
+      disposeSceneContents(scene, bodies);
       renderer.dispose();
     },
   };

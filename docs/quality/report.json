@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-30T15:42:05.836Z",
+  "generatedAt": "2026-08-30T15:48:17.658Z",
   "gates": [
     {
       "id": "typecheck",
@@ -161,7 +161,7 @@
       "value": "clean",
       "threshold": "within .size-limit.json",
       "status": "pass",
-      "detail": "initial JS (every chunk needed for the first frame, gzip): 129.7 kB of 293 kB\ntotal payload (JS + CSS, gzip, excludes fetched imagery): 130.6 kB of 1465 kB"
+      "detail": "initial JS (every chunk needed for the first frame, gzip): 130.1 kB of 293 kB\ntotal payload (JS + CSS, gzip, excludes fetched imagery): 131.0 kB of 1465 kB"
     },
     {
       "id": "vulnerabilities",
@@ -259,11 +259,11 @@
     },
     {
       "path": "src/presentation/render/precision-scene.ts",
-      "logicalLinesOfCode": 59,
-      "physicalLines": 162,
+      "logicalLinesOfCode": 58,
+      "physicalLines": 166,
       "cyclomaticComplexity": 6,
-      "halsteadVolume": 1504.4969343077871,
-      "maintainabilityIndex": 65.51958134511881,
+      "halsteadVolume": 1432.2285226161466,
+      "maintainabilityIndex": 66.05249125751826,
       "longestClassLines": 0,
       "documentableExports": 1,
       "documentedExports": 1
@@ -324,6 +324,17 @@
       "documentedExports": 1
     },
     {
+      "path": "src/presentation/render/precision-cubes.ts",
+      "logicalLinesOfCode": 41,
+      "physicalLines": 135,
+      "cyclomaticComplexity": 3,
+      "halsteadVolume": 958.442092092328,
+      "maintainabilityIndex": 74.45052496266112,
+      "longestClassLines": 0,
+      "documentableExports": 4,
+      "documentedExports": 4
+    },
+    {
       "path": "src/domain/fixed-step.ts",
       "logicalLinesOfCode": 31,
       "physicalLines": 122,
@@ -344,17 +355,6 @@
       "longestClassLines": 0,
       "documentableExports": 4,
       "documentedExports": 4
-    },
-    {
-      "path": "src/presentation/render/precision-cubes.ts",
-      "logicalLinesOfCode": 30,
-      "physicalLines": 81,
-      "cyclomaticComplexity": 3,
-      "halsteadVolume": 631.1007625814906,
-      "maintainabilityIndex": 81.68378162505539,
-      "longestClassLines": 0,
-      "documentableExports": 3,
-      "documentedExports": 3
     },
     {
       "path": "src/shared/frame-window.ts",
