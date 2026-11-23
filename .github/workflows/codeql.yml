@@ -24,7 +24,7 @@ jobs:
         # GitHub Actions workflows are themselves a supply-chain surface.
         # `actions` analysis catches unpinned or over-permissioned steps.
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: github/codeql-action/init@v3
         with:
